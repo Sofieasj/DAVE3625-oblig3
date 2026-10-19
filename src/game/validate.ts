@@ -4,8 +4,8 @@ export function normalizeJavaInput(value: string): string {
   return value
     .trim()
     .replace(/\s+/g, ' ')
-    .replace(/\s*([=;()[\]{}])\s*/g, '$1')
-    .replace(/\s*(\+\+|--)\s*/g, '$1')
+    .replace(/\s*(\+\+|--|\+=|-=|\*=|\/=|%=|==|!=|<=|>=|=|<|>|\+|-|\*|\/|%)\s*/g, '$1')
+    .replace(/\s*([;()[\]{}])\s*/g, '$1')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -29,7 +29,7 @@ export function validateExerciseAnswer(exercise: Exercise, answer: string) {
       isCorrect: true,
       normalized,
       reason: 'matches accepted answer',
-      message: 'Correct. The seed crate is repaired.',
+      message: 'Correct. The building is repaired.',
     }
   }
 

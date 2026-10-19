@@ -1,1 +1,2 @@
 - 2026-10-19: Started the first slice by building the validation and state engine before styling. The main risk was overbuilding the UI too early, so I kept the map placeholder and one exercise only.
+- 2026-10-19: The Water Pump validator rejected valid decrement forms because it only allowed one exact answer. Added accepted equivalent Java forms and operator-aware whitespace normalization; added regression tests for common correct forms and near misses.

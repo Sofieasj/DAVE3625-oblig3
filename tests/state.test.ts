@@ -11,6 +11,7 @@ describe('game progress', () => {
     expect(mapNodes.map((node) => getNodeStatus(state, node))).toEqual([
       'current',
       'locked',
+      'locked',
     ])
   })
 
@@ -23,5 +24,10 @@ describe('game progress', () => {
     expect(solvedState.currentNodeId).toBe(mapNodes[1].id)
     expect(solvedState.fixedNodeIds).toContain(mapNodes[0].id)
     expect(initialState.fixedNodeIds).toEqual([])
+
+    const waterPumpSolvedState = solveCurrentNode(solvedState)
+    expect(getNodeStatus(waterPumpSolvedState, mapNodes[1])).toBe('fixed')
+    expect(getNodeStatus(waterPumpSolvedState, mapNodes[2])).toBe('current')
+    expect(waterPumpSolvedState.currentNodeId).toBe(mapNodes[2].id)
   })
 })

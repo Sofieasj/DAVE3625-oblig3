@@ -1,5 +1,3 @@
-import type { KeyboardEvent } from 'react'
-
 import type { Exercise } from '../data/exercises'
 
 export type ConsoleEntry = {
@@ -10,6 +8,7 @@ export type ConsoleEntry = {
 type TaskPanelProps = {
   nodeName: string
   exercise: Exercise | undefined
+  completedTaskNumber: number | null
   answer: string
   consoleEntries: ConsoleEntry[]
   showHint: boolean
@@ -21,6 +20,7 @@ type TaskPanelProps = {
 export function TaskPanel({
   nodeName,
   exercise,
+  completedTaskNumber,
   answer,
   consoleEntries,
   showHint,
@@ -28,6 +28,14 @@ export function TaskPanel({
   onRunTests,
   onShowHint,
 }: TaskPanelProps) {
+  if (completedTaskNumber !== null) {
+    return (
+      <aside className="terminal-panel task-complete" aria-label="Task completed" aria-live="polite">
+        <h1>Task {completedTaskNumber} completed!</h1>
+      </aside>
+    )
+  }
+
   if (!exercise) {
     return (
       <aside className="terminal-panel" aria-label="Exercise panel">
@@ -38,12 +46,6 @@ export function TaskPanel({
         <p className="mission-copy">This node is unlocked. Its exercise will be added later.</p>
       </aside>
     )
-  }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === 'Enter') {
-      onRunTests()
-    }
   }
 
   return (
@@ -58,11 +60,12 @@ export function TaskPanel({
       <label className="field-label" htmlFor="answer-input">
         Rewrite the broken line
       </label>
-      <input
+      <textarea
         id="answer-input"
+        rows={3}
         value={answer}
         onChange={(event) => onAnswerChange(event.target.value)}
-        onKeyDown={handleKeyDown}
+        aria-label="Java code answer"
       />
 
       <div className="button-row">

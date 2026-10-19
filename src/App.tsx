@@ -59,11 +59,13 @@ function isGameState(value: unknown): value is GameState {
 
 function App() {
   const [gameState, setGameState] = useState<GameState>(loadGameState)
+  const [selectedNodeId, setSelectedNodeId] = useState(gameState.currentNodeId)
   const [answer, setAnswer] = useState('')
   const [consoleEntries, setConsoleEntries] = useState<ConsoleEntry[]>([
     { type: 'info', text: 'Farm status: waiting for test run.' },
   ])
   const [showHint, setShowHint] = useState(false)
+  const [completedTaskNumber, setCompletedTaskNumber] = useState<number | null>(null)
 
   useEffect(() => {
     try {
@@ -73,9 +75,24 @@ function App() {
     }
   }, [gameState])
 
-  const currentNode = mapNodes.find((node) => node.id === gameState.currentNodeId)
+  useEffect(() => {
+    if (completedTaskNumber === null) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCompletedTaskNumber(null)
+      setAnswer('')
+      setShowHint(false)
+      setConsoleEntries([{ type: 'info', text: 'Enter your answer and run the tests.' }])
+    }, 1200)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [completedTaskNumber])
+
+  const selectedNode = mapNodes.find((node) => node.id === selectedNodeId)
   const currentExercise = exercises.find(
-    (exercise) => exercise.nodeId === gameState.currentNodeId,
+    (exercise) => exercise.nodeId === selectedNodeId,
   )
 
   function runTests() {
@@ -94,18 +111,24 @@ function App() {
       return
     }
 
+    if (gameState.fixedNodeIds.includes(selectedNodeId)) {
+      setConsoleEntries([{ type: 'info', text: 'This task is already completed.' }])
+      setShowHint(false)
+      return
+    }
+
+    setCompletedTaskNumber(exercises.indexOf(currentExercise) + 1)
+    setSelectedNodeId(selectedNode?.unlocks ?? selectedNodeId)
     setGameState((state) => solveCurrentNode(state))
-    setConsoleEntries([
-      { type: 'pass', text: result.message },
-      { type: 'info', text: 'The task is fixed and the next node is unlocked.' },
-    ])
-    setShowHint(false)
   }
 
   function resetGame() {
-    setGameState(createInitialState())
+    const initialState = createInitialState()
+    setGameState(initialState)
+    setSelectedNodeId(initialState.currentNodeId)
     setAnswer('')
     setShowHint(false)
+    setCompletedTaskNumber(null)
     setConsoleEntries([{ type: 'info', text: 'Progress reset. The farm is waiting again.' }])
   }
 
@@ -119,10 +142,21 @@ function App() {
       </header>
 
       <main className="game-layout">
-        <OverworldMap nodes={mapNodes} getNodeStatus={(node) => getNodeStatus(gameState, node)} />
+        <OverworldMap
+          nodes={mapNodes}
+          getNodeStatus={(node) => getNodeStatus(gameState, node)}
+          selectedNodeId={selectedNodeId}
+          onSelectNode={(node) => {
+            setSelectedNodeId(node.id)
+            setAnswer('')
+            setShowHint(false)
+            setConsoleEntries([{ type: 'info', text: 'Enter your answer and run the tests.' }])
+          }}
+        />
         <TaskPanel
-          nodeName={currentNode?.name ?? 'Unknown node'}
+          nodeName={selectedNode?.name ?? 'Unknown node'}
           exercise={currentExercise}
+          completedTaskNumber={completedTaskNumber}
           answer={answer}
           consoleEntries={consoleEntries}
           showHint={showHint}

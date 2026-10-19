@@ -18,6 +18,13 @@ export const mapNodes: MapNode[] = [
     id: 'water-pump',
     name: 'Water Pump',
     position: { x: 310, y: 160 },
+    unlocks: 'windmill',
+    exerciseIds: ['water-pump-1'],
+  },
+  {
+    id: 'windmill',
+    name: 'Windmill',
+    position: { x: 500, y: 260 },
     unlocks: null,
     exerciseIds: [],
   },

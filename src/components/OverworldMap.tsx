@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 
 import type { MapNode } from '../data/nodes'
 import type { NodeStatus } from '../game/state'
@@ -6,14 +6,110 @@ import type { NodeStatus } from '../game/state'
 type OverworldMapProps = {
   nodes: MapNode[]
   getNodeStatus: (node: MapNode) => NodeStatus
+  selectedNodeId: string
+  onSelectNode: (node: MapNode) => void
 }
 
-export function OverworldMap({ nodes, getNodeStatus }: OverworldMapProps) {
+export function OverworldMap({
+  nodes,
+  getNodeStatus,
+  selectedNodeId,
+  onSelectNode,
+}: OverworldMapProps) {
   const currentNode = nodes.find((node) => getNodeStatus(node) === 'current') ?? nodes[0]
+  const tokenRef = useRef<HTMLDivElement>(null)
+  const surfaceRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const previousNodeId = useRef(currentNode?.id)
+  const dragStart = useRef<{ pointerId: number; x: number; y: number; offsetX: number; offsetY: number } | null>(null)
+  const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    if (!currentNode || previousNodeId.current === currentNode.id) {
+      return
+    }
+
+    const fromNode = nodes.find((node) => node.id === previousNodeId.current)
+    const token = tokenRef.current
+    previousNodeId.current = currentNode.id
+
+    if (!fromNode || !token) {
+      return
+    }
+
+    const path = createPath(fromNode, currentNode)
+    token.style.offsetPath = `path("${path}")`
+    token.style.offsetDistance = '0%'
+    void token.getBoundingClientRect()
+    requestAnimationFrame(() => {
+      token.style.offsetDistance = '100%'
+    })
+  }, [currentNode, nodes])
+
+  function startPan(event: PointerEvent<HTMLDivElement>) {
+    if ((event.target as HTMLElement).closest('button')) {
+      return
+    }
+
+    event.currentTarget.setPointerCapture(event.pointerId)
+    dragStart.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      offsetX: mapOffset.x,
+      offsetY: mapOffset.y,
+    }
+  }
+
+  function pan(event: PointerEvent<HTMLDivElement>) {
+    const start = dragStart.current
+    const surface = surfaceRef.current
+    const content = contentRef.current
+    if (!start || start.pointerId !== event.pointerId || !surface || !content) {
+      return
+    }
+
+    const maxX = Math.min(0, surface.clientWidth - content.offsetWidth)
+    const maxY = Math.min(0, surface.clientHeight - content.offsetHeight)
+    setMapOffset({
+      x: Math.max(maxX, Math.min(0, start.offsetX + event.clientX - start.x)),
+      y: Math.max(maxY, Math.min(0, start.offsetY + event.clientY - start.y)),
+    })
+  }
+
+  function stopPan(event: PointerEvent<HTMLDivElement>) {
+    if (dragStart.current?.pointerId === event.pointerId) {
+      dragStart.current = null
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
 
   return (
     <section className="map-panel" aria-label="Farm map">
-      <div className="map-surface">
+      <div
+        ref={surfaceRef}
+        className="map-surface"
+        onPointerDown={startPan}
+        onPointerMove={pan}
+        onPointerUp={stopPan}
+        onPointerCancel={stopPan}
+        aria-label="Farm map. Drag to move the map."
+      >
+        <div
+          ref={contentRef}
+          className="map-content"
+          style={{ transform: `translate(${mapOffset.x}px, ${mapOffset.y}px)` }}
+        >
+        <svg className="map-paths" viewBox="0 0 720 620" aria-hidden="true">
+          {nodes.slice(0, -1).map((node, index) => {
+            const nextNode = nodes[index + 1]
+            const path = createPath(node, nextNode)
+            const status = getNodeStatus(node) === 'fixed' ? 'completed' : 'locked'
+
+            return <path key={`${node.id}-${nextNode.id}`} className={`map-path ${status}`} d={path} />
+          })}
+        </svg>
+
         {nodes.map((node, index) => {
           const status = getNodeStatus(node)
           const style: CSSProperties = {
@@ -25,10 +121,12 @@ export function OverworldMap({ nodes, getNodeStatus }: OverworldMapProps) {
             <button
               key={node.id}
               type="button"
-              className={`node-card ${status}`}
+              className={`node-card ${status} ${node.id === selectedNodeId ? 'selected' : ''}`}
               style={style}
               aria-label={`${node.name}: ${status}`}
-              disabled
+              disabled={status === 'locked'}
+              onClick={() => onSelectNode(node)}
+              onPointerDown={(event) => event.stopPropagation()}
             >
               <span className="node-badge">{index + 1}</span>
               <span className="node-label">{node.name}</span>
@@ -40,10 +138,11 @@ export function OverworldMap({ nodes, getNodeStatus }: OverworldMapProps) {
 
         {currentNode && (
           <div
+            ref={tokenRef}
             className="player-token"
             style={{
-              left: `${currentNode.position.x + 74}px`,
-              top: `${currentNode.position.y + 70}px`,
+              left: `${currentNode.position.x + 48}px`,
+              top: `${currentNode.position.y + 14}px`,
             }}
             aria-label={`Player at ${currentNode.name}`}
           >
@@ -51,7 +150,19 @@ export function OverworldMap({ nodes, getNodeStatus }: OverworldMapProps) {
             <span className="token-body" />
           </div>
         )}
+        </div>
       </div>
     </section>
   )
+}
+
+function createPath(fromNode: MapNode, toNode: MapNode): string {
+  const startX = fromNode.position.x + 60
+  const startY = fromNode.position.y + 31
+  const endX = toNode.position.x + 60
+  const endY = toNode.position.y + 31
+  const controlX = (startX + endX) / 2
+  const controlY = (startY + endY) / 2 + (endX >= startX ? -42 : 42)
+
+  return `M ${startX} ${startY} Q ${controlX} ${controlY} ${endX} ${endY}`
 }

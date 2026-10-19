@@ -4,6 +4,7 @@ import { exercises } from '../src/data/exercises'
 import { validateExerciseAnswer } from '../src/game/validate'
 
 const exercise = exercises[0]
+const waterPumpExercise = exercises[1]
 
 describe('exercise validation', () => {
   it('accepts extra whitespace and normalizes punctuation', () => {
@@ -33,5 +34,23 @@ describe('exercise validation', () => {
       acceptedAnswers: ['i++;'],
     }
     expect(validateExerciseAnswer(loopExercise, 'i ++ ;').isCorrect).toBe(true)
+  })
+
+  it.each([
+    'if ( waterLevel > 0 ) { waterLevel -- ; } else { waterLevel = 0 ; }',
+    'if (waterLevel>0){waterLevel -= 1;}else{waterLevel=0;}',
+    'if (waterLevel > 0) {\n  waterLevel = waterLevel - 1;\n} else {\n  waterLevel = 0;\n}',
+  ])('accepts a valid Water Pump answer: %s', (answer) => {
+    expect(validateExerciseAnswer(waterPumpExercise, answer).isCorrect).toBe(true)
+  })
+
+  it.each([
+    'if (waterLevel >= 0) { waterLevel--; } else { waterLevel = 0; }',
+    'if (waterLevel > 0) { waterLevel--; } else { waterLevel == 0; }',
+    'if (waterLevel > 0) { waterLevel++; } else { waterLevel = 0; }',
+  ])('rejects a Water Pump near miss: %s', (answer) => {
+    expect(
+      validateExerciseAnswer(waterPumpExercise, answer).isCorrect,
+    ).toBe(false)
   })
 })

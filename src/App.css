@@ -81,6 +81,45 @@
   background-size: 32px 32px;
   border: 2px solid var(--color-panel-border);
   overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.map-surface:active {
+  cursor: grabbing;
+}
+
+.map-content {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 720px;
+  height: 620px;
+  will-change: transform;
+  user-select: none;
+}
+
+.map-paths {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 720px;
+  height: 620px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.map-path {
+  fill: none;
+  stroke-width: 9px;
+  stroke-linecap: square;
+  stroke-dasharray: 2 10;
+}
+
+.map-path.completed {
+  stroke: var(--color-sand);
+}
+
+.map-path.locked {
+  stroke: var(--color-locked-path);
 }
 
 .node-card {
@@ -98,6 +137,15 @@
 
 .node-card:disabled {
   color: var(--color-hud);
+}
+
+.node-card:not(:disabled) {
+  cursor: pointer;
+}
+
+.node-card.selected {
+  outline: 2px dashed var(--color-current-ring);
+  outline-offset: 3px;
 }
 
 .node-card.locked {
@@ -156,9 +204,19 @@
 
 .player-token {
   position: absolute;
+  z-index: 2;
   width: 24px;
   height: 34px;
-  transform: translate(-50%, -50%);
+  offset-anchor: center;
+  offset-rotate: 0deg;
+  transition: offset-distance 1.2s steps(10, end);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-token {
+    transition-duration: 0.01ms;
+  }
 }
 
 .token-head {
@@ -185,6 +243,20 @@
 .terminal-panel {
   padding: 18px 20px 20px;
   min-height: 660px;
+}
+
+.terminal-panel.task-complete {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.task-complete h1 {
+  margin: 0;
+  color: var(--color-mint-strong);
+  font-family: var(--font-primary);
+  font-size: 18px;
+  line-height: 1.7;
 }
 
 .mission-topline {
@@ -214,7 +286,7 @@
 .mission-copy {
   color: var(--color-mint);
   font-family: var(--font-secondary);
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1.2;
   margin-bottom: 16px;
 }
@@ -241,7 +313,13 @@
   background: var(--color-panel-alt);
   color: var(--color-mint);
   font-family: var(--font-secondary);
-  font-size: 26px;
+  font-size: 20px;
+}
+
+textarea#answer-input {
+  min-height: 88px;
+  resize: vertical;
+  white-space: pre-wrap;
 }
 
 .button-row {
@@ -273,7 +351,7 @@
 
 .console-line {
   font-family: var(--font-secondary);
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.3;
 }
 
