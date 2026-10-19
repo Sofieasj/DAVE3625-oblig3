@@ -1,0 +1,323 @@
+/* App shell and overall layout */
+.app-shell {
+  width: min(1280px, 100%);
+  min-height: 760px;
+  margin: 0 auto;
+  padding: 12px 18px 20px;
+  color: var(--color-cream);
+  box-sizing: border-box;
+}
+
+/* HUD and top bar */
+.hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 12px;
+  background: var(--color-hud);
+  border: 2px solid var(--color-panel-border);
+  box-sizing: border-box;
+}
+
+.brand {
+  font-family: var(--font-primary);
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--color-cream);
+}
+
+.reset-button,
+.primary-button,
+.secondary-button,
+.node-card {
+  font-family: var(--font-primary);
+  text-transform: uppercase;
+}
+
+.reset-button,
+.primary-button,
+.secondary-button {
+  border: 2px solid var(--color-panel-border);
+  background: var(--color-panel-bg);
+  color: var(--color-mint);
+  cursor: pointer;
+}
+
+.reset-button {
+  padding: 8px 12px;
+  font-size: 10px;
+}
+
+/* Main board and panel layout */
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 760px) minmax(360px, 520px);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.map-panel,
+.terminal-panel {
+  background: var(--color-panel-bg);
+  border: 2px solid var(--color-panel-border);
+  box-sizing: border-box;
+}
+
+.map-panel {
+  min-height: 660px;
+  padding: 16px;
+}
+
+/* Farm map and nodes */
+.map-surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 620px;
+  background:
+    linear-gradient(90deg, var(--color-grass) 0 50%, var(--color-grass-alt) 50% 100%),
+    linear-gradient(180deg, var(--color-grass) 0 50%, var(--color-grass-alt) 50% 100%);
+  background-size: 32px 32px;
+  border: 2px solid var(--color-panel-border);
+  overflow: hidden;
+}
+
+.node-card {
+  position: absolute;
+  width: 120px;
+  min-height: 62px;
+  padding: 8px 10px;
+  border: 2px solid var(--color-locked-border);
+  background: var(--color-tile);
+  color: var(--color-hud);
+  cursor: default;
+  text-align: left;
+  opacity: 1;
+}
+
+.node-card:disabled {
+  color: var(--color-hud);
+}
+
+.node-card.locked {
+  background: var(--color-locked-tile);
+  border-color: var(--color-locked-border);
+}
+
+.node-card.fixed {
+  background: var(--color-tile);
+  border-color: var(--color-gold-border);
+  box-shadow: inset 0 0 0 2px var(--color-gold);
+}
+
+.node-card.current {
+  background: var(--color-tile);
+  border-color: var(--color-current-ring);
+  box-shadow: 0 0 0 3px var(--color-current-ring-glow);
+}
+
+.node-badge {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-hud);
+  color: var(--color-cream);
+  font-size: 9px;
+  margin-right: 8px;
+}
+
+.node-label {
+  display: inline-block;
+  font-size: 9px;
+  line-height: 1.3;
+  vertical-align: middle;
+}
+
+.lock-mark,
+.alert-mark {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 14px;
+}
+
+.lock-mark {
+  color: var(--color-locked-path);
+  font-size: 7px;
+}
+
+.alert-mark {
+  color: var(--color-alert);
+  animation: blink 0.75s steps(2, end) infinite;
+}
+
+.player-token {
+  position: absolute;
+  width: 24px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+}
+
+.token-head {
+  position: absolute;
+  top: 0;
+  left: 6px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-skin);
+  border-radius: 3px;
+}
+
+.token-body {
+  position: absolute;
+  left: 3px;
+  bottom: 0;
+  width: 18px;
+  height: 20px;
+  background: var(--color-player-overalls);
+  border-radius: 5px 5px 3px 3px;
+}
+
+/* Terminal task panel */
+.terminal-panel {
+  padding: 18px 20px 20px;
+  min-height: 660px;
+}
+
+.mission-topline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.mission-pill {
+  display: inline-block;
+  background: var(--color-amber);
+  color: var(--color-panel-bg);
+  font-family: var(--font-primary);
+  font-size: 9px;
+  padding: 6px 8px;
+}
+
+.mission-topline h1 {
+  margin: 0;
+  color: var(--color-amber);
+  font-family: var(--font-primary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.mission-copy {
+  color: var(--color-mint);
+  font-family: var(--font-secondary);
+  font-size: 28px;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.code-box {
+  background: var(--color-panel-alt);
+  border: 1px solid var(--color-panel-border);
+  padding: 12px 10px;
+  margin-bottom: 18px;
+}
+
+.code-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-secondary);
+  font-size: 26px;
+  color: var(--color-mint-strong);
+}
+
+.code-text {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+}
+.line-number {
+  color: var(--color-dim);
+  width: 18px;
+  text-align: right;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-amber);
+  font-family: var(--font-primary);
+  font-size: 9px;
+}
+
+#answer-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 10px;
+  border: 1px solid var(--color-panel-border);
+  background: var(--color-panel-alt);
+  color: var(--color-mint);
+  font-family: var(--font-secondary);
+  font-size: 26px;
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.primary-button,
+.secondary-button {
+  flex: 1;
+  padding: 12px 10px;
+  font-size: 10px;
+}
+
+.primary-button {
+  background: var(--color-hud);
+  color: var(--color-amber);
+}
+
+/* Console messages and hints */
+.console {
+  margin-top: 20px;
+  background: var(--color-console-bg);
+  border: 1px solid var(--color-panel-border);
+  padding: 12px;
+  min-height: 150px;
+}
+
+.console-line {
+  font-family: var(--font-secondary);
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+.console-line.pass {
+  color: var(--color-mint-strong);
+}
+
+.console-line.fail {
+  color: var(--color-error);
+}
+
+.console-line.info,
+.console-line.hint-line {
+  color: var(--color-mint);
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}

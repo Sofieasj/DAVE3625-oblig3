@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+:root {
+  /* Typography */
+  --font-primary: 'Press Start 2P', monospace;
+  --font-secondary: 'VT323', monospace;
+
+  /* Base palette */
+  --color-grass: #86c46c;
+  --color-grass-alt: #8fcc75;
+  --color-sand: #f0d9a0;
+  --color-sand-edge: #c9a96a;
+  --color-sand-dash: #fbeac0;
+  --color-locked-path: #6f8591;
+  --color-locked-dash: #b3c3cc;
+  --color-water: #6fc3d9;
+  --color-water-highlight: #b8ecf6;
+  --color-tree-dark: #4f9a5a;
+  --color-tree-mid: #5fae66;
+  --color-tree-light: #7cc47f;
+  --color-trunk: #8a5a3a;
+  --color-gold: #f7d56b;
+  --color-gold-border: #e3a92d;
+  --color-tile: #dff1fb;
+  --color-locked-tile: #cdd7dd;
+  --color-locked-border: #55646f;
+  --color-current-ring: #22a06b;
+  --color-alert: #f2806f;
+  --color-hud: #2a3a4a;
+  --color-panel-bg: #243242;
+  --color-panel-alt: #1b2733;
+  --color-console-bg: #17222c;
+  --color-panel-border: #3f566a;
+  --color-mint: #b9f0cf;
+  --color-mint-strong: #8fe3b0;
+  --color-amber: #ffcf70;
+  --color-dim: #8aa3b2;
+  --color-error: #ff9d8a;
+  --color-code-type: #8fd9ec;
+  --color-code-pink: #f5a9d0;
+  --color-player-overalls: #4f8fd9;
+  --color-fox: #f09a4a;
+  --color-cream: #fff8e1;
+  --color-skin: #f8d3a5;
+  --color-current-ring-glow: rgb(34 160 107 / 45%);
+
+  font-family: var(--font-secondary);
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--color-mint);
+  background: var(--color-grass);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-grass);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: none;
+}
+
+input:focus,
+button:focus {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}

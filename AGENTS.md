@@ -13,6 +13,7 @@ A retro pixel-art web game that teaches complete beginners Java. The player arri
 7. **Placeholders first, art later.** All visuals must work with simple colored rectangles before any polish. Keep the mapping from game state to visuals in one file so styling can be changed in one place.
 8. **Log decisions.** When something breaks or we change direction, add a short line to `docs/process-log.md` (what went wrong, what we changed). This feeds my "how I used AI / tested and improved" write-up.
 9. **Be extremely concise.** Sacrifice grammar for the sake of concision
+10. **Clean code.** Write readable and maintainable code.
 
 ## Stack
 

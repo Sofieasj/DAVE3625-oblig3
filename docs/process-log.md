@@ -1,0 +1,1 @@
+- 2026-10-19: Started the first slice by building the validation and state engine before styling. The main risk was overbuilding the UI too early, so I kept the map placeholder and one exercise only.
