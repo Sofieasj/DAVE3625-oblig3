@@ -14,7 +14,6 @@ import { validateExerciseAnswer } from './game/validate'
 import './App.css'
 
 const STORAGE_KEY = 'solar-bean-progress'
-const initialExercise = exercises[0]
 
 function loadGameState(): GameState {
   try {
@@ -60,7 +59,7 @@ function isGameState(value: unknown): value is GameState {
 
 function App() {
   const [gameState, setGameState] = useState<GameState>(loadGameState)
-  const [answer, setAnswer] = useState(initialExercise.starterCode)
+  const [answer, setAnswer] = useState('')
   const [consoleEntries, setConsoleEntries] = useState<ConsoleEntry[]>([
     { type: 'info', text: 'Farm status: waiting for test run.' },
   ])
@@ -105,7 +104,7 @@ function App() {
 
   function resetGame() {
     setGameState(createInitialState())
-    setAnswer(initialExercise.starterCode)
+    setAnswer('')
     setShowHint(false)
     setConsoleEntries([{ type: 'info', text: 'Progress reset. The farm is waiting again.' }])
   }

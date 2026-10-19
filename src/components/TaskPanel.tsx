@@ -55,13 +55,6 @@ export function TaskPanel({
 
       <p className="mission-copy">{exercise.prompt}</p>
 
-      <div className="code-box" aria-label="Starter code panel">
-        <div className="code-line">
-          <span className="line-number">1</span>
-          <code className="code-text">{exercise.starterCode}</code>
-        </div>
-      </div>
-
       <label className="field-label" htmlFor="answer-input">
         Rewrite the broken line
       </label>
