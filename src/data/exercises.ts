@@ -16,10 +16,10 @@ export const exercises: Exercise[] = [
     type: 'fix-code',
     title: 'Seed Shed: Declare the seed count',
     prompt:
-      'The seed crate is broken. Fix the line so it declares an int called seedCount and sets it to 12.',
+      'The seed crate is broken. Write a line so it declares an int called seedCount and sets it to 12.',
     acceptedAnswers: ['int seedCount = 12;'],
     hint: 'Use an int variable named seedCount and assign 12.',
-    failMessage: 'The variable name or the value is wrong.',
+    failMessage: 'The variable name or value is wrong. Double-check your spelling.',
   },
   {
     id: 'water-pump-1',
@@ -35,7 +35,7 @@ export const exercises: Exercise[] = [
     ],
     hint: 'Check waterLevel > 0 in the if condition. Use else to set waterLevel to 0.',
     failMessage:
-      'Use > 0 in the condition, decrease waterLevel in the if branch, and assign 0 in the else branch.',
+      'Use > 0 in the condition, decrease waterLevel in the if branch, and assign 0 in the else branch. Double-check your spelling.',
   },
   {
     id: 'windmill-1',
@@ -49,6 +49,30 @@ export const exercises: Exercise[] = [
       'for (int i = 0; i < 3; i += 1) { System.out.println("Bean!"); }',
     ],
     hint: 'Set i to 0, use i < 3 as the condition, and increase i each time.',
-    failMessage: 'Check that the loop runs 3 times and prints "Bean!" each time.',
+    failMessage: 'Check that the loop runs 3 times and prints "Bean!" each time. Double-check your spelling.',
+  },
+  {
+    id: 'greenhouse-1',
+    nodeId: 'greenhouse',
+    type: 'fix-code',
+    title: 'Greenhouse: Plant the first seed',
+    prompt:
+      'Write a method called getFirstSeed that takes an int array named seedCounts and returns its first value.',
+    acceptedAnswers: ['int getFirstSeed(int[] seedCounts) { return seedCounts[0]; }'],
+    hint: 'The method returns an int. Use seedCounts[0] to access the first array value.',
+    failMessage: 'Check the method name, array parameter, and first array index. Double-check your spelling.',
+  },
+  {
+    id: 'pet-barn-1',
+    nodeId: 'pet-barn',
+    type: 'fix-code',
+    title: 'Pet Barn: Build a Raccoon',
+    prompt:
+      'Create a Raccoon subclass of Pet and override sound() so it returns "Chitter!".',
+    acceptedAnswers: [
+      'class Raccoon extends Pet { @Override public String sound() { return "Chitter!"; } }',
+    ],
+    hint: 'Use "class Raccoon extends Pet" and add @Override above a sound() method that returns "Chitter!".',
+    failMessage: 'Check the subclass name, parent class, and overridden sound method. Double-check your spelling.',
   },
 ]

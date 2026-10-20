@@ -7,6 +7,8 @@ type OverworldMapProps = {
   nodes: MapNode[]
   getNodeStatus: (node: MapNode) => NodeStatus
   selectedNodeId: string
+  petVariant: 'dog' | 'raccoon'
+  petSpeech: string
   onSelectNode: (node: MapNode) => void
 }
 
@@ -14,6 +16,8 @@ export function OverworldMap({
   nodes,
   getNodeStatus,
   selectedNodeId,
+  petVariant,
+  petSpeech,
   onSelectNode,
 }: OverworldMapProps) {
   const currentNode = nodes.find((node) => getNodeStatus(node) === 'current') ?? nodes[0]
@@ -22,7 +26,7 @@ export function OverworldMap({
   const contentRef = useRef<HTMLDivElement>(null)
   const previousNodeId = useRef(currentNode?.id)
   const dragStart = useRef<{ pointerId: number; x: number; y: number; offsetX: number; offsetY: number } | null>(null)
-  const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 })
+  const [mapOffset, setMapOffset] = useState({ x: 0, y: -250 })
 
   useEffect(() => {
     if (!currentNode || previousNodeId.current === currentNode.id) {
@@ -100,7 +104,7 @@ export function OverworldMap({
           className="map-content"
           style={{ transform: `translate(${mapOffset.x}px, ${mapOffset.y}px)` }}
         >
-        <svg className="map-paths" viewBox="0 0 720 620" aria-hidden="true">
+        <svg className="map-paths" viewBox="0 0 720 940" aria-hidden="true">
           {nodes.slice(0, -1).map((node, index) => {
             const nextNode = nodes[index + 1]
             const path = createPath(node, nextNode)
@@ -148,6 +152,12 @@ export function OverworldMap({
           >
             <span className="token-head" />
             <span className="token-body" />
+            <span className={`pet-companion ${petVariant}`} aria-hidden="true">
+              <span className="pet-ear" />
+              <span className="pet-mask" />
+              <span className="pet-tail" />
+            </span>
+            <span className="pet-speech" aria-live="polite">{petSpeech}</span>
           </div>
         )}
         </div>

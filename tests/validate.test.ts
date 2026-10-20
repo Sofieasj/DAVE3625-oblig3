@@ -6,6 +6,8 @@ import { validateExerciseAnswer } from '../src/game/validate'
 const exercise = exercises[0]
 const waterPumpExercise = exercises[1]
 const windmillExercise = exercises[2]
+const greenhouseExercise = exercises[3]
+const petBarnExercise = exercises[4]
 
 describe('exercise validation', () => {
   it('accepts extra whitespace and normalizes punctuation', () => {
@@ -67,5 +69,37 @@ describe('exercise validation', () => {
     'for (int i = 0; i < 2; i++) { System.out.println("Bean!"); }',
   ])('rejects a Windmill loop near miss: %s', (answer) => {
     expect(validateExerciseAnswer(windmillExercise, answer).isCorrect).toBe(false)
+  })
+
+  it('accepts the Greenhouse method across multiple lines', () => {
+    expect(
+      validateExerciseAnswer(
+        greenhouseExercise,
+        'int getFirstSeed(int[] seedCounts) {\n  return seedCounts[0];\n}',
+      ).isCorrect,
+    ).toBe(true)
+  })
+
+  it.each([
+    'int getFirstSeed(int[] seedCounts) { return seedCounts[1]; }',
+    'int getFirstSeed(int seedCounts) { return seedCounts[0]; }',
+  ])('rejects a Greenhouse method near miss: %s', (answer) => {
+    expect(validateExerciseAnswer(greenhouseExercise, answer).isCorrect).toBe(false)
+  })
+
+  it('accepts the Pet Barn raccoon subclass with an overridden sound method', () => {
+    expect(
+      validateExerciseAnswer(
+        petBarnExercise,
+        'class Raccoon extends Pet {\n  @Override\n  public String sound() {\n    return "Chitter!";\n  }\n}',
+      ).isCorrect,
+    ).toBe(true)
+  })
+
+  it.each([
+    'class Raccoon extends Animal { @Override public String sound() { return "Chitter!"; } }',
+    'class Raccoon extends Pet { @Override public String sound() { return "Woof!"; } }',
+  ])('rejects a Pet Barn near miss: %s', (answer) => {
+    expect(validateExerciseAnswer(petBarnExercise, answer).isCorrect).toBe(false)
   })
 })

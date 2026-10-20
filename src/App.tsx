@@ -23,8 +23,9 @@ function loadGameState(): GameState {
     }
 
     const parsedState: unknown = JSON.parse(savedState)
-    if (isGameState(parsedState)) {
-      return parsedState
+    const migratedState = migrateGameState(parsedState)
+    if (migratedState) {
+      return migratedState
     }
 
     console.warn('Saved Solar Bean progress is invalid. Starting a new game.')
@@ -50,11 +51,23 @@ function isGameState(value: unknown): value is GameState {
     state.fixedNodeIds.every((nodeId) => knownNodeIds.has(nodeId)) &&
     typeof state.nodeStates === 'object' &&
     state.nodeStates !== null &&
-    mapNodes.every((node) => {
-      const status = state.nodeStates?.[node.id]
-      return status === 'locked' || status === 'current' || status === 'fixed'
-    })
+    Object.entries(state.nodeStates).every(([nodeId, status]) =>
+      knownNodeIds.has(nodeId) &&
+      (status === 'locked' || status === 'current' || status === 'fixed'),
+    )
   )
+}
+
+function migrateGameState(value: unknown): GameState | null {
+  if (!isGameState(value)) {
+    return null
+  }
+
+  const nodeStates = Object.fromEntries(
+    mapNodes.map((node) => [node.id, value.nodeStates[node.id] ?? 'locked']),
+  )
+
+  return { ...value, nodeStates }
 }
 
 function App() {
@@ -146,6 +159,8 @@ function App() {
           nodes={mapNodes}
           getNodeStatus={(node) => getNodeStatus(gameState, node)}
           selectedNodeId={selectedNodeId}
+          petVariant={gameState.fixedNodeIds.includes('pet-barn') ? 'raccoon' : 'dog'}
+          petSpeech={gameState.fixedNodeIds.includes('pet-barn') ? 'Chitter!' : 'Woof!'}
           onSelectNode={(node) => {
             setSelectedNodeId(node.id)
             setAnswer('')

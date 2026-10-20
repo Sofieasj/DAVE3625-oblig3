@@ -93,7 +93,7 @@
   position: absolute;
   inset: 0 auto auto 0;
   width: 720px;
-  height: 620px;
+  height: 940px;
   will-change: transform;
   user-select: none;
 }
@@ -102,7 +102,7 @@
   position: absolute;
   inset: 0 auto auto 0;
   width: 720px;
-  height: 620px;
+  height: 940px;
   overflow: visible;
   pointer-events: none;
 }
@@ -237,6 +237,71 @@
   height: 20px;
   background: var(--color-player-overalls);
   border-radius: 5px 5px 3px 3px;
+}
+
+.pet-companion {
+  position: absolute;
+  top: 13px;
+  left: 26px;
+  width: 16px;
+  height: 14px;
+  background: var(--color-trunk);
+  border-radius: 3px;
+}
+
+.pet-companion.raccoon {
+  background: var(--color-raccoon);
+}
+
+.pet-ear {
+  position: absolute;
+  top: -4px;
+  left: 2px;
+  width: 5px;
+  height: 6px;
+  background: inherit;
+  transform: rotate(25deg);
+}
+
+.pet-tail {
+  position: absolute;
+  right: -5px;
+  bottom: 0;
+  width: 7px;
+  height: 5px;
+  background: inherit;
+  border-radius: 0 5px 5px 0;
+}
+
+.pet-companion.raccoon .pet-mask {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  left: 1px;
+  width: 14px;
+  height: 5px;
+  background: var(--color-raccoon-mask);
+}
+
+.pet-companion.raccoon .pet-tail {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-raccoon-mask) 0 2px,
+    var(--color-raccoon) 2px 4px
+  );
+}
+
+.pet-speech {
+  position: absolute;
+  top: -14px;
+  left: 25px;
+  padding: 1px 4px;
+  background: var(--color-cream);
+  color: var(--color-hud);
+  font-family: var(--font-secondary);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 /* Terminal task panel */

@@ -4,12 +4,28 @@ import { mapNodes } from '../src/data/nodes'
 import { createInitialState, getNodeStatus, solveCurrentNode } from '../src/game/state'
 
 describe('game progress', () => {
+  it('places farm tasks along the requested winding route', () => {
+    const [seedShed, waterPump, windmill, greenhouse, petBarn] = mapNodes
+
+    expect(seedShed.position.x).toBe(waterPump.position.x)
+    expect(seedShed.position.y).toBeGreaterThan(waterPump.position.y)
+    expect(seedShed.position.y - waterPump.position.y).toBeGreaterThanOrEqual(300)
+    expect(waterPump.position.y).toBe(windmill.position.y)
+    expect(windmill.position.x).toBe(greenhouse.position.x)
+    expect(windmill.position.y).toBeLessThan(greenhouse.position.y)
+    expect(greenhouse.position.y - windmill.position.y).toBeGreaterThanOrEqual(300)
+    expect(greenhouse.position.y).toBe(petBarn.position.y)
+    expect(greenhouse.position.x).toBeLessThan(petBarn.position.x)
+  })
+
   it('starts with the first node current and the rest locked', () => {
     const state = createInitialState()
 
     expect(state.currentNodeId).toBe(mapNodes[0].id)
     expect(mapNodes.map((node) => getNodeStatus(state, node))).toEqual([
       'current',
+      'locked',
+      'locked',
       'locked',
       'locked',
       'locked',
@@ -35,5 +51,15 @@ describe('game progress', () => {
     expect(getNodeStatus(windmillSolvedState, mapNodes[2])).toBe('fixed')
     expect(getNodeStatus(windmillSolvedState, mapNodes[3])).toBe('current')
     expect(windmillSolvedState.currentNodeId).toBe(mapNodes[3].id)
+
+    const greenhouseSolvedState = solveCurrentNode(windmillSolvedState)
+    expect(getNodeStatus(greenhouseSolvedState, mapNodes[3])).toBe('fixed')
+    expect(getNodeStatus(greenhouseSolvedState, mapNodes[4])).toBe('current')
+    expect(greenhouseSolvedState.currentNodeId).toBe(mapNodes[4].id)
+
+    const petBarnSolvedState = solveCurrentNode(greenhouseSolvedState)
+    expect(getNodeStatus(petBarnSolvedState, mapNodes[4])).toBe('fixed')
+    expect(getNodeStatus(petBarnSolvedState, mapNodes[5])).toBe('current')
+    expect(petBarnSolvedState.currentNodeId).toBe(mapNodes[5].id)
   })
 })
