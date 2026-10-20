@@ -7,6 +7,7 @@ type OverworldMapProps = {
   nodes: MapNode[]
   getNodeStatus: (node: MapNode) => NodeStatus
   selectedNodeId: string
+  isComplete: boolean
   petVariant: 'dog' | 'raccoon'
   petSpeech: string
   onSelectNode: (node: MapNode) => void
@@ -16,17 +17,41 @@ export function OverworldMap({
   nodes,
   getNodeStatus,
   selectedNodeId,
+  isComplete,
   petVariant,
   petSpeech,
   onSelectNode,
 }: OverworldMapProps) {
-  const currentNode = nodes.find((node) => getNodeStatus(node) === 'current') ?? nodes[0]
+  const currentNode =
+    nodes.find((node) => getNodeStatus(node) === 'current') ??
+    [...nodes].reverse().find((node) => getNodeStatus(node) === 'fixed') ??
+    nodes[0]
   const tokenRef = useRef<HTMLDivElement>(null)
   const surfaceRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const previousNodeId = useRef(currentNode?.id)
   const dragStart = useRef<{ pointerId: number; x: number; y: number; offsetX: number; offsetY: number } | null>(null)
   const [mapOffset, setMapOffset] = useState({ x: 0, y: -250 })
+  const mapScale = isComplete ? 1.18 : 1
+
+  useEffect(() => {
+    if (!isComplete || !surfaceRef.current) {
+      return
+    }
+
+    const surface = surfaceRef.current
+    const minX = Math.min(...nodes.map((node) => node.position.x))
+    const minY = Math.min(...nodes.map((node) => node.position.y))
+    const maxX = Math.max(...nodes.map((node) => node.position.x + 120))
+    const maxY = Math.max(...nodes.map((node) => node.position.y + 62))
+    const nodesCenterX = (minX + maxX) / 2
+    const nodesCenterY = (minY + maxY) / 2
+
+    setMapOffset({
+      x: surface.clientWidth / 2 - nodesCenterX * mapScale,
+      y: surface.clientHeight / 2 - nodesCenterY * mapScale,
+    })
+  }, [isComplete, mapScale, nodes])
 
   useEffect(() => {
     if (!currentNode || previousNodeId.current === currentNode.id) {
@@ -73,11 +98,15 @@ export function OverworldMap({
       return
     }
 
-    const maxX = Math.min(0, surface.clientWidth - content.offsetWidth)
-    const maxY = Math.min(0, surface.clientHeight - content.offsetHeight)
+    const mapWidth = content.offsetWidth * mapScale
+    const mapHeight = content.offsetHeight * mapScale
+    const minX = Math.min(0, surface.clientWidth - mapWidth)
+    const maxX = Math.max(0, surface.clientWidth - mapWidth)
+    const minY = Math.min(0, surface.clientHeight - mapHeight)
+    const maxY = Math.max(0, surface.clientHeight - mapHeight)
     setMapOffset({
-      x: Math.max(maxX, Math.min(0, start.offsetX + event.clientX - start.x)),
-      y: Math.max(maxY, Math.min(0, start.offsetY + event.clientY - start.y)),
+      x: Math.max(minX, Math.min(maxX, start.offsetX + event.clientX - start.x)),
+      y: Math.max(minY, Math.min(maxY, start.offsetY + event.clientY - start.y)),
     })
   }
 
@@ -102,7 +131,9 @@ export function OverworldMap({
         <div
           ref={contentRef}
           className="map-content"
-          style={{ transform: `translate(${mapOffset.x}px, ${mapOffset.y}px)` }}
+          style={{
+            transform: `translate(${mapOffset.x}px, ${mapOffset.y}px) scale(${mapScale})`,
+          }}
         >
         <svg className="map-paths" viewBox="0 0 720 940" aria-hidden="true">
           {nodes.slice(0, -1).map((node, index) => {
@@ -134,6 +165,13 @@ export function OverworldMap({
             >
               <span className="node-badge">{index + 1}</span>
               <span className="node-label">{node.name}</span>
+              {node.id === 'solar-roof' && status === 'fixed' && (
+                <span className="installed-panels" aria-label="Solar panels installed">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              )}
               {status === 'locked' && <span className="lock-mark" aria-hidden="true">LOCKED</span>}
               {status === 'current' && <span className="alert-mark" aria-hidden="true">!</span>}
             </button>

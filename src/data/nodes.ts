@@ -39,8 +39,15 @@ export const mapNodes: MapNode[] = [
     id: 'pet-barn',
     name: 'Pet Barn',
     position: { x: 480, y: 800 },
-    unlocks: 'beacon',
+    unlocks: 'solar-roof',
     exerciseIds: ['pet-barn-1'],
+  },
+  {
+    id: 'solar-roof',
+    name: 'Solar Roof',
+    position: { x: 480, y: 640 },
+    unlocks: 'beacon',
+    exerciseIds: ['solar-roof-1'],
   },
   {
     id: 'beacon',

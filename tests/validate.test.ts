@@ -8,6 +8,8 @@ const waterPumpExercise = exercises[1]
 const windmillExercise = exercises[2]
 const greenhouseExercise = exercises[3]
 const petBarnExercise = exercises[4]
+const solarRoofExercise = exercises[5]
+const beaconQuiz = exercises[6]
 
 describe('exercise validation', () => {
   it('accepts extra whitespace and normalizes punctuation', () => {
@@ -101,5 +103,23 @@ describe('exercise validation', () => {
     'class Raccoon extends Pet { @Override public String sound() { return "Woof!"; } }',
   ])('rejects a Pet Barn near miss: %s', (answer) => {
     expect(validateExerciseAnswer(petBarnExercise, answer).isCorrect).toBe(false)
+  })
+
+  it('accepts connecting the solar panels to the battery', () => {
+    expect(
+      validateExerciseAnswer(solarRoofExercise, ' battery . connect ( solarPanels ) ; '),
+    ).toMatchObject({ isCorrect: true })
+  })
+
+  it('rejects a misspelled solar panel reference', () => {
+    expect(
+      validateExerciseAnswer(solarRoofExercise, 'battery.connect(solarPanel);').isCorrect,
+    ).toBe(false)
+  })
+
+  it('accepts the correct Beacon quiz option and rejects wrong or empty choices', () => {
+    expect(validateExerciseAnswer(beaconQuiz, '0').isCorrect).toBe(true)
+    expect(validateExerciseAnswer(beaconQuiz, '1').isCorrect).toBe(false)
+    expect(validateExerciseAnswer(beaconQuiz, '').isCorrect).toBe(false)
   })
 })

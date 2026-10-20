@@ -1,2 +1,3 @@
 - 2026-10-19: Started the first slice by building the validation and state engine before styling. The main risk was overbuilding the UI too early, so I kept the map placeholder and one exercise only.
 - 2026-10-19: The Water Pump validator rejected valid decrement forms because it only allowed one exact answer. Added accepted equivalent Java forms and operator-aware whitespace normalization; added regression tests for common correct forms and near misses.
+- 2026-10-20: Added a seventh Solar Roof node after Pet Barn, at the user's request, rather than folding the battery task into Pet Barn. Existing saved games at or beyond Beacon are migrated back to Solar Roof so the new task is not skipped.

@@ -1,13 +1,24 @@
-export type Exercise = {
+type ExerciseBase = {
   id: string
   nodeId: string
-  type: 'fix-code'
   title: string
   prompt: string
-  acceptedAnswers: string[]
   hint: string
   failMessage?: string
 }
+
+export type FixCodeExercise = ExerciseBase & {
+  type: 'fix-code'
+  acceptedAnswers: string[]
+}
+
+export type QuizExercise = ExerciseBase & {
+  type: 'quiz'
+  options: string[]
+  correctOption: number
+}
+
+export type Exercise = FixCodeExercise | QuizExercise
 
 export const exercises: Exercise[] = [
   {
@@ -74,5 +85,31 @@ export const exercises: Exercise[] = [
     ],
     hint: 'Use "class Raccoon extends Pet" and add @Override above a sound() method that returns "Chitter!".',
     failMessage: 'Check the subclass name, parent class, and overridden sound method. Double-check your spelling.',
+  },
+  {
+    id: 'solar-roof-1',
+    nodeId: 'solar-roof',
+    type: 'fix-code',
+    title: 'Solar Roof: Connect the panels',
+    prompt:
+      'Connect the solarPanels object to the battery by calling the battery object’s connect method.',
+    acceptedAnswers: ['battery.connect(solarPanels);'],
+    hint: 'Call connect on battery and pass solarPanels as its argument.',
+    failMessage: 'Check the object names and method call. Double-check your spelling.',
+  },
+  {
+    id: 'beacon-quiz',
+    nodeId: 'beacon',
+    type: 'quiz',
+    title: 'Beacon: Final Java check',
+    prompt: 'Which Java loop runs its body exactly three times?',
+    options: [
+      'for (int i = 0; i < 3; i++)',
+      'for (int i = 0; i <= 3; i++)',
+      'for (int i = 1; i < 3; i++)',
+    ],
+    correctOption: 0,
+    hint: 'Start at 0, continue while i is less than 3, and increase i by 1.',
+    failMessage: 'Choose the loop that runs for i = 0, 1, and 2. Double-check your answer.',
   },
 ]

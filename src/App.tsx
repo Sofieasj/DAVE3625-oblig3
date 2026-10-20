@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { exercises } from './data/exercises'
 import { mapNodes } from './data/nodes'
 import { OverworldMap } from './components/OverworldMap'
+import { EndingScreen } from './components/EndingScreen'
 import { TaskPanel, type ConsoleEntry } from './components/TaskPanel'
 import {
   createInitialState,
@@ -63,11 +64,23 @@ function migrateGameState(value: unknown): GameState | null {
     return null
   }
 
-  const nodeStates = Object.fromEntries(
+  const nodeStates: GameState['nodeStates'] = Object.fromEntries(
     mapNodes.map((node) => [node.id, value.nodeStates[node.id] ?? 'locked']),
   )
+  const fixedNodeIds = [...value.fixedNodeIds]
+  let currentNodeId = value.currentNodeId
 
-  return { ...value, nodeStates }
+  if (!value.nodeStates['solar-roof'] && (value.currentNodeId === 'beacon' || fixedNodeIds.includes('beacon'))) {
+    nodeStates['solar-roof'] = 'current'
+    nodeStates.beacon = 'locked'
+    currentNodeId = 'solar-roof'
+    const beaconIndex = fixedNodeIds.indexOf('beacon')
+    if (beaconIndex >= 0) {
+      fixedNodeIds.splice(beaconIndex, 1)
+    }
+  }
+
+  return { ...value, currentNodeId, fixedNodeIds, nodeStates }
 }
 
 function App() {
@@ -154,11 +167,14 @@ function App() {
         </button>
       </header>
 
-      <main className="game-layout">
+      <main
+        className={`game-layout ${gameState.fixedNodeIds.includes('beacon') ? 'game-complete' : ''}`}
+      >
         <OverworldMap
           nodes={mapNodes}
           getNodeStatus={(node) => getNodeStatus(gameState, node)}
           selectedNodeId={selectedNodeId}
+          isComplete={gameState.fixedNodeIds.includes('beacon')}
           petVariant={gameState.fixedNodeIds.includes('pet-barn') ? 'raccoon' : 'dog'}
           petSpeech={gameState.fixedNodeIds.includes('pet-barn') ? 'Chitter!' : 'Woof!'}
           onSelectNode={(node) => {
@@ -168,17 +184,21 @@ function App() {
             setConsoleEntries([{ type: 'info', text: 'Enter your answer and run the tests.' }])
           }}
         />
-        <TaskPanel
-          nodeName={selectedNode?.name ?? 'Unknown node'}
-          exercise={currentExercise}
-          completedTaskNumber={completedTaskNumber}
-          answer={answer}
-          consoleEntries={consoleEntries}
-          showHint={showHint}
-          onAnswerChange={setAnswer}
-          onRunTests={runTests}
-          onShowHint={() => setShowHint(true)}
-        />
+        {gameState.fixedNodeIds.includes('beacon') && completedTaskNumber === null ? (
+          <EndingScreen onPlayAgain={resetGame} />
+        ) : (
+          <TaskPanel
+            nodeName={selectedNode?.name ?? 'Unknown node'}
+            exercise={currentExercise}
+            completedTaskNumber={completedTaskNumber}
+            answer={answer}
+            consoleEntries={consoleEntries}
+            showHint={showHint}
+            onAnswerChange={setAnswer}
+            onRunTests={runTests}
+            onShowHint={() => setShowHint(true)}
+          />
+        )}
       </main>
     </div>
   )

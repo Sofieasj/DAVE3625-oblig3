@@ -5,7 +5,7 @@ export function normalizeJavaInput(value: string): string {
     .trim()
     .replace(/\s+/g, ' ')
     .replace(/\s*(\+\+|--|\+=|-=|\*=|\/=|%=|==|!=|<=|>=|=|<|>|\+|-|\*|\/|%)\s*/g, '$1')
-    .replace(/\s*([;()[\]{}])\s*/g, '$1')
+    .replace(/\s*([.;()[\]{}])\s*/g, '$1')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -19,6 +19,18 @@ export function validateExerciseAnswer(exercise: Exercise, answer: string) {
       normalized,
       reason: 'empty input',
       message: 'Please enter a Java line before testing.',
+    }
+  }
+
+  if (exercise.type === 'quiz') {
+    const isCorrect = normalized === String(exercise.correctOption)
+    return {
+      isCorrect,
+      normalized,
+      reason: isCorrect ? 'matches correct option' : 'incorrect option',
+      message: isCorrect
+        ? 'Correct. The Beacon is lit.'
+        : exercise.failMessage ?? 'That is not the correct option.',
     }
   }
 

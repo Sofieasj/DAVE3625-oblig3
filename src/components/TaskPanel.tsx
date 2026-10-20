@@ -57,16 +57,36 @@ export function TaskPanel({
 
       <p className="mission-copy">{exercise.prompt}</p>
 
-      <label className="field-label" htmlFor="answer-input">
-        Rewrite the broken line
-      </label>
-      <textarea
-        id="answer-input"
-        rows={3}
-        value={answer}
-        onChange={(event) => onAnswerChange(event.target.value)}
-        aria-label="Java code answer"
-      />
+      {exercise.type === 'quiz' ? (
+        <fieldset className="quiz-options">
+          <legend className="field-label">Choose an answer</legend>
+          {exercise.options.map((option, index) => (
+            <label className="quiz-option" key={option}>
+              <input
+                type="radio"
+                name={exercise.id}
+                value={index}
+                checked={answer === String(index)}
+                onChange={() => onAnswerChange(String(index))}
+              />
+              <code>{option}</code>
+            </label>
+          ))}
+        </fieldset>
+      ) : (
+        <>
+          <label className="field-label" htmlFor="answer-input">
+            Rewrite the broken line
+          </label>
+          <textarea
+            id="answer-input"
+            rows={3}
+            value={answer}
+            onChange={(event) => onAnswerChange(event.target.value)}
+            aria-label="Java code answer"
+          />
+        </>
+      )}
 
       <div className="button-row">
         <button type="button" className="primary-button" onClick={onRunTests}>

@@ -5,7 +5,7 @@ import { createInitialState, getNodeStatus, solveCurrentNode } from '../src/game
 
 describe('game progress', () => {
   it('places farm tasks along the requested winding route', () => {
-    const [seedShed, waterPump, windmill, greenhouse, petBarn] = mapNodes
+    const [seedShed, waterPump, windmill, greenhouse, petBarn, solarRoof] = mapNodes
 
     expect(seedShed.position.x).toBe(waterPump.position.x)
     expect(seedShed.position.y).toBeGreaterThan(waterPump.position.y)
@@ -16,6 +16,9 @@ describe('game progress', () => {
     expect(greenhouse.position.y - windmill.position.y).toBeGreaterThanOrEqual(300)
     expect(greenhouse.position.y).toBe(petBarn.position.y)
     expect(greenhouse.position.x).toBeLessThan(petBarn.position.x)
+    expect(solarRoof.position.x).toBe(petBarn.position.x)
+    expect(solarRoof.position.y).toBeLessThan(petBarn.position.y)
+    expect(solarRoof.position.y).toBeGreaterThan(mapNodes[6].position.y)
   })
 
   it('starts with the first node current and the rest locked', () => {
@@ -24,6 +27,7 @@ describe('game progress', () => {
     expect(state.currentNodeId).toBe(mapNodes[0].id)
     expect(mapNodes.map((node) => getNodeStatus(state, node))).toEqual([
       'current',
+      'locked',
       'locked',
       'locked',
       'locked',
@@ -61,5 +65,14 @@ describe('game progress', () => {
     expect(getNodeStatus(petBarnSolvedState, mapNodes[4])).toBe('fixed')
     expect(getNodeStatus(petBarnSolvedState, mapNodes[5])).toBe('current')
     expect(petBarnSolvedState.currentNodeId).toBe(mapNodes[5].id)
+
+    const solarRoofSolvedState = solveCurrentNode(petBarnSolvedState)
+    expect(getNodeStatus(solarRoofSolvedState, mapNodes[5])).toBe('fixed')
+    expect(getNodeStatus(solarRoofSolvedState, mapNodes[6])).toBe('current')
+    expect(solarRoofSolvedState.currentNodeId).toBe(mapNodes[6].id)
+
+    const beaconSolvedState = solveCurrentNode(solarRoofSolvedState)
+    expect(getNodeStatus(beaconSolvedState, mapNodes[6])).toBe('fixed')
+    expect(beaconSolvedState.fixedNodeIds).toContain('beacon')
   })
 })
