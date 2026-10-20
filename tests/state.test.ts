@@ -12,6 +12,7 @@ describe('game progress', () => {
       'current',
       'locked',
       'locked',
+      'locked',
     ])
   })
 
@@ -29,5 +30,10 @@ describe('game progress', () => {
     expect(getNodeStatus(waterPumpSolvedState, mapNodes[1])).toBe('fixed')
     expect(getNodeStatus(waterPumpSolvedState, mapNodes[2])).toBe('current')
     expect(waterPumpSolvedState.currentNodeId).toBe(mapNodes[2].id)
+
+    const windmillSolvedState = solveCurrentNode(waterPumpSolvedState)
+    expect(getNodeStatus(windmillSolvedState, mapNodes[2])).toBe('fixed')
+    expect(getNodeStatus(windmillSolvedState, mapNodes[3])).toBe('current')
+    expect(windmillSolvedState.currentNodeId).toBe(mapNodes[3].id)
   })
 })

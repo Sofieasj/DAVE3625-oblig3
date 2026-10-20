@@ -25,6 +25,13 @@ export const mapNodes: MapNode[] = [
     id: 'windmill',
     name: 'Windmill',
     position: { x: 500, y: 260 },
+    unlocks: 'greenhouse',
+    exerciseIds: ['windmill-1'],
+  },
+  {
+    id: 'greenhouse',
+    name: 'Greenhouse',
+    position: { x: 310, y: 410 },
     unlocks: null,
     exerciseIds: [],
   },

@@ -37,4 +37,18 @@ export const exercises: Exercise[] = [
     failMessage:
       'Use > 0 in the condition, decrease waterLevel in the if branch, and assign 0 in the else branch.',
   },
+  {
+    id: 'windmill-1',
+    nodeId: 'windmill',
+    type: 'fix-code',
+    title: 'Windmill: Repeat the greeting',
+    prompt:
+      'Use a for loop to print "Bean!" three times. Start at 0 and stop before the counter reaches 3.',
+    acceptedAnswers: [
+      'for (int i = 0; i < 3; i++) { System.out.println("Bean!"); }',
+      'for (int i = 0; i < 3; i += 1) { System.out.println("Bean!"); }',
+    ],
+    hint: 'Set i to 0, use i < 3 as the condition, and increase i each time.',
+    failMessage: 'Check that the loop runs 3 times and prints "Bean!" each time.',
+  },
 ]

@@ -5,6 +5,7 @@ import { validateExerciseAnswer } from '../src/game/validate'
 
 const exercise = exercises[0]
 const waterPumpExercise = exercises[1]
+const windmillExercise = exercises[2]
 
 describe('exercise validation', () => {
   it('accepts extra whitespace and normalizes punctuation', () => {
@@ -52,5 +53,19 @@ describe('exercise validation', () => {
     expect(
       validateExerciseAnswer(waterPumpExercise, answer).isCorrect,
     ).toBe(false)
+  })
+
+  it.each([
+    'for (int i = 0; i < 3; i++) { System.out.println("Bean!"); }',
+    'for(int i=0;i<3;i+=1){System.out.println("Bean!");}',
+  ])('accepts a valid Windmill loop: %s', (answer) => {
+    expect(validateExerciseAnswer(windmillExercise, answer).isCorrect).toBe(true)
+  })
+
+  it.each([
+    'for (int i = 0; i <= 3; i++) { System.out.println("Bean!"); }',
+    'for (int i = 0; i < 2; i++) { System.out.println("Bean!"); }',
+  ])('rejects a Windmill loop near miss: %s', (answer) => {
+    expect(validateExerciseAnswer(windmillExercise, answer).isCorrect).toBe(false)
   })
 })
