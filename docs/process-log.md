@@ -1,3 +1,5 @@
 - 2026-10-19: Started the first slice by building the validation and state engine before styling. The main risk was overbuilding the UI too early, so I kept the map placeholder and one exercise only.
 - 2026-10-19: The Water Pump validator rejected valid decrement forms because it only allowed one exact answer. Added accepted equivalent Java forms and operator-aware whitespace normalization; added regression tests for common correct forms and near misses.
 - 2026-10-20: Added a seventh Solar Roof node after Pet Barn, at the user's request, rather than folding the battery task into Pet Barn. Existing saved games at or beyond Beacon are migrated back to Solar Roof so the new task is not skipped.
+- 2026-10-20: Started adapting the game to STORY.md with a two-task Seed Shed. Progress now unlocks Water Pump only after both exercises pass; added story/lesson, code preview, and dropdown rendering to the task panel.
+- 2026-10-20: Replaced the remaining old exercises with the STORY tasks, reordered Solar Roof before Pet Barn, and added two-task progression to Water Pump, Greenhouse, Pet Barn and Beacon. Verified a complete playthrough through the restored-farm screen.

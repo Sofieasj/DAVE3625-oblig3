@@ -56,7 +56,7 @@ States per node: `locked`, `current`, `fixed`.
   - (optional, tiny) `write-line`: write one line, e.g. "declare an int called water set to 10"
 - Validation runs **in the app** (no Java compiler, no backend): normalize the input (trim, collapse whitespace, normalize spaces around `=`, `;` and brackets), then compare against a list of accepted answers and/or regex patterns.
 - Feedback: on failure show which check failed plus a hint (hint is also available via a button). On success show a short success message and trigger the repair animation.
-- About 8-10 exercises total across the first 5 nodes, plus a short quiz at node 6.
+- About 8-10 exercises total across the first 5 nodes, plus a short quiz at node 3 and 6.
 
 Suggested data shape (adjust if something simpler works):
 
@@ -173,7 +173,7 @@ README.md
 
 ## Out of scope (do NOT build)
 
-Accounts or login, a backend or database, real Java compilation/execution, free-walking movement or collision, multiplayer, more than 6 nodes, sound (optional only if everything else is done), mobile layout beyond "doesn't break".
+Accounts or login, a backend or database, real Java compilation/execution, free-walking movement or collision, multiplayer, more than 8 nodes, sound (optional only if everything else is done), mobile layout beyond "doesn't break".
 
 ## Deliverables (for context)
 

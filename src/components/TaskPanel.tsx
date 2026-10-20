@@ -9,6 +9,7 @@ type TaskPanelProps = {
   nodeName: string
   exercise: Exercise | undefined
   completedTaskNumber: number | null
+  completedTaskMessage: string
   answer: string
   consoleEntries: ConsoleEntry[]
   showHint: boolean
@@ -21,6 +22,7 @@ export function TaskPanel({
   nodeName,
   exercise,
   completedTaskNumber,
+  completedTaskMessage,
   answer,
   consoleEntries,
   showHint,
@@ -32,6 +34,7 @@ export function TaskPanel({
     return (
       <aside className="terminal-panel task-complete" aria-label="Task completed" aria-live="polite">
         <h1>Task {completedTaskNumber} completed!</h1>
+        {completedTaskMessage && <p className="mission-copy">{completedTaskMessage}</p>}
       </aside>
     )
   }
@@ -55,6 +58,12 @@ export function TaskPanel({
         <h1>{exercise.title}</h1>
       </div>
 
+      {(exercise.story || exercise.lesson) && (
+        <div className="task-context">
+          {exercise.story && <p className="bean-story">Bean: {exercise.story}</p>}
+          {exercise.lesson && <p className="java-lesson">JAVA TIP: {exercise.lesson}</p>}
+        </div>
+      )}
       <p className="mission-copy">{exercise.prompt}</p>
 
       {exercise.type === 'quiz' ? (
@@ -73,10 +82,56 @@ export function TaskPanel({
             </label>
           ))}
         </fieldset>
+      ) : exercise.type === 'fill-blank' ? (
+        <div className="fill-blank-preview">
+          <pre className="starter-code">
+            {exercise.starterCode.split('\n').map((line, index) => (
+              <span className="starter-line" key={`${index}-${line}`}>
+                <span className="line-number">{index + 1}</span>
+                {line.includes('___') ? (
+                  <>
+                    {line.split('___')[0]}
+                    <label className="visually-hidden" htmlFor="fill-blank-answer">
+                      Choose a value for the blank
+                    </label>
+                    <select
+                      id="fill-blank-answer"
+                      value={answer}
+                      onChange={(event) => onAnswerChange(event.target.value)}
+                    >
+                      <option value="">Choose...</option>
+                      {exercise.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    {line.split('___')[1]}
+                  </>
+                ) : (
+                  line
+                )}
+              </span>
+            ))}
+          </pre>
+        </div>
       ) : (
         <>
+          {exercise.starterCode && (
+            <pre className="starter-code">
+              {exercise.starterCode.split('\n').map((line, index) => (
+                <span
+                  className={`starter-line ${exercise.type === 'fix-code' && exercise.editableLine === index + 1 ? 'editable-line' : ''}`}
+                  key={`${index}-${line}`}
+                >
+                  <span className="line-number">{index + 1}</span>
+                  {line}
+                </span>
+              ))}
+            </pre>
+          )}
           <label className="field-label" htmlFor="answer-input">
-            Rewrite the broken line
+            {exercise.type === 'fix-code' ? 'Rewrite the broken line' : 'Write your Java line'}
           </label>
           <textarea
             id="answer-input"

@@ -164,6 +164,17 @@ export function OverworldMap({
               onPointerDown={(event) => event.stopPropagation()}
             >
               <span className="node-badge">{index + 1}</span>
+              {status === 'locked' && (
+                <svg
+                  className="lock-mark"
+                  viewBox="0 0 16 16"
+                  role="img"
+                  aria-label="Locked"
+                  shapeRendering="crispEdges"
+                >
+                  <path d="M4 7V5a4 4 0 0 1 8 0v2h1v8H3V7h1Zm2 0h4V5a2 2 0 1 0-4 0v2Zm2 2a1 1 0 0 0-1 1c0 .4.2.7.5.9V13h1v-2.1c.3-.2.5-.5.5-.9a1 1 0 0 0-1-1Z" />
+                </svg>
+              )}
               <span className="node-label">{node.name}</span>
               {node.id === 'solar-roof' && status === 'fixed' && (
                 <span className="installed-panels" aria-label="Solar panels installed">
@@ -172,7 +183,6 @@ export function OverworldMap({
                   <span />
                 </span>
               )}
-              {status === 'locked' && <span className="lock-mark" aria-hidden="true">LOCKED</span>}
               {status === 'current' && <span className="alert-mark" aria-hidden="true">!</span>}
             </button>
           )

@@ -29,19 +29,43 @@ export function validateExerciseAnswer(exercise: Exercise, answer: string) {
       normalized,
       reason: isCorrect ? 'matches correct option' : 'incorrect option',
       message: isCorrect
-        ? 'Correct. The Beacon is lit.'
+        ? exercise.successMessage ?? 'Correct.'
         : exercise.failMessage ?? 'That is not the correct option.',
     }
   }
 
-  const accepted = exercise.acceptedAnswers.map(normalizeJavaInput)
+  if (exercise.type === 'fill-blank') {
+    const isCorrect = exercise.acceptedAnswers.some(
+      (acceptedAnswer) => normalizeJavaInput(acceptedAnswer) === normalized,
+    )
 
-  if (accepted.includes(normalized)) {
+    return {
+      isCorrect,
+      normalized,
+      reason: isCorrect ? 'matches accepted option' : 'incorrect option',
+      message: isCorrect
+        ? exercise.successMessage ?? 'Correct.'
+        : exercise.failMessage ?? 'Choose a different option.',
+    }
+  }
+
+  const accepted = exercise.acceptedAnswers.map(normalizeJavaInput)
+  const matchingPattern = exercise.acceptedPatterns?.find((pattern) => {
+    const regex = new RegExp(pattern)
+    return regex.test(normalized)
+  })
+
+  if (accepted.includes(normalized) || matchingPattern) {
+    const capturedValue = matchingPattern
+      ? normalized.match(new RegExp(matchingPattern))?.[1]
+      : undefined
+
     return {
       isCorrect: true,
       normalized,
-      reason: 'matches accepted answer',
-      message: 'Correct. The building is repaired.',
+      reason: matchingPattern ? 'matches accepted pattern' : 'matches accepted answer',
+      message: exercise.successMessage ?? 'Correct. The building is repaired.',
+      ...(exercise.savesAs === 'petSound' && capturedValue ? { savedValue: capturedValue } : {}),
     }
   }
 

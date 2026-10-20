@@ -5,7 +5,9 @@ export type NodeStatus = 'locked' | 'current' | 'fixed'
 export type GameState = {
   currentNodeId: string
   fixedNodeIds: string[]
+  completedExerciseIds: string[]
   nodeStates: Record<string, NodeStatus>
+  petSound?: string
 }
 
 export function createInitialState(): GameState {
@@ -18,23 +20,33 @@ export function createInitialState(): GameState {
   return {
     currentNodeId: 'seed-shed',
     fixedNodeIds: [],
+    completedExerciseIds: [],
     nodeStates,
   }
 }
 
-export function solveCurrentNode(state: GameState): GameState {
+export function completeExercise(state: GameState, exerciseId: string): GameState {
   const currentNode = mapNodes.find((node) => node.id === state.currentNodeId)
-  if (!currentNode) {
+  if (!currentNode || !currentNode.exerciseIds.includes(exerciseId)) {
     return state
   }
 
-  const nextNodeId = currentNode.unlocks
+  const completedExerciseIds = [...new Set([...state.completedExerciseIds, exerciseId])]
+  const nodeIsComplete = currentNode.exerciseIds.every((id) => completedExerciseIds.includes(id))
   const nodeStates = { ...state.nodeStates }
-  nodeStates[currentNode.id] = 'fixed'
+  const fixedNodeIds = nodeIsComplete
+    ? [...new Set([...state.fixedNodeIds, currentNode.id])]
+    : state.fixedNodeIds
+  const nextNodeId = nodeIsComplete ? currentNode.unlocks : null
+
+  if (nodeIsComplete) {
+    nodeStates[currentNode.id] = 'fixed'
+  }
 
   const nextState: GameState = {
     currentNodeId: nextNodeId ?? currentNode.id,
-    fixedNodeIds: [...new Set([...state.fixedNodeIds, currentNode.id])],
+    fixedNodeIds,
+    completedExerciseIds,
     nodeStates,
   }
 

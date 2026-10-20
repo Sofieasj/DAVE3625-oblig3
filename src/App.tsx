@@ -6,9 +6,9 @@ import { OverworldMap } from './components/OverworldMap'
 import { EndingScreen } from './components/EndingScreen'
 import { TaskPanel, type ConsoleEntry } from './components/TaskPanel'
 import {
+  completeExercise,
   createInitialState,
   getNodeStatus,
-  solveCurrentNode,
   type GameState,
 } from './game/state'
 import { validateExerciseAnswer } from './game/validate'
@@ -50,6 +50,10 @@ function isGameState(value: unknown): value is GameState {
     knownNodeIds.has(state.currentNodeId) &&
     Array.isArray(state.fixedNodeIds) &&
     state.fixedNodeIds.every((nodeId) => knownNodeIds.has(nodeId)) &&
+    (state.completedExerciseIds === undefined ||
+      (Array.isArray(state.completedExerciseIds) &&
+        state.completedExerciseIds.every((exerciseId) => typeof exerciseId === 'string'))) &&
+    (state.petSound === undefined || typeof state.petSound === 'string') &&
     typeof state.nodeStates === 'object' &&
     state.nodeStates !== null &&
     Object.entries(state.nodeStates).every(([nodeId, status]) =>
@@ -67,7 +71,13 @@ function migrateGameState(value: unknown): GameState | null {
   const nodeStates: GameState['nodeStates'] = Object.fromEntries(
     mapNodes.map((node) => [node.id, value.nodeStates[node.id] ?? 'locked']),
   )
-  const fixedNodeIds = [...value.fixedNodeIds]
+  const completedExerciseIds = new Set(value.completedExerciseIds ?? [])
+  const fixedNodeIds = [...new Set(value.fixedNodeIds)]
+  for (const node of mapNodes) {
+    if (fixedNodeIds.includes(node.id)) {
+      node.exerciseIds.forEach((exerciseId) => completedExerciseIds.add(exerciseId))
+    }
+  }
   let currentNodeId = value.currentNodeId
 
   if (!value.nodeStates['solar-roof'] && (value.currentNodeId === 'beacon' || fixedNodeIds.includes('beacon'))) {
@@ -80,18 +90,40 @@ function migrateGameState(value: unknown): GameState | null {
     }
   }
 
-  return { ...value, currentNodeId, fixedNodeIds, nodeStates }
+  if (currentNodeId === 'pet-barn' && !fixedNodeIds.includes('solar-roof')) {
+    nodeStates['solar-roof'] = 'current'
+    nodeStates['pet-barn'] = 'locked'
+    currentNodeId = 'solar-roof'
+  }
+
+  return {
+    ...value,
+    currentNodeId,
+    fixedNodeIds,
+    completedExerciseIds: [...completedExerciseIds],
+    nodeStates,
+    petSound: value.petSound ?? (fixedNodeIds.includes('pet-barn') ? 'Chitter!' : undefined),
+  }
 }
 
 function App() {
   const [gameState, setGameState] = useState<GameState>(loadGameState)
   const [selectedNodeId, setSelectedNodeId] = useState(gameState.currentNodeId)
+  const [selectedExerciseId, setSelectedExerciseId] = useState(
+    () =>
+      exercises.find(
+        (exercise) =>
+          exercise.nodeId === gameState.currentNodeId &&
+          !gameState.completedExerciseIds.includes(exercise.id),
+      )?.id ?? '',
+  )
   const [answer, setAnswer] = useState('')
   const [consoleEntries, setConsoleEntries] = useState<ConsoleEntry[]>([
     { type: 'info', text: 'Farm status: waiting for test run.' },
   ])
   const [showHint, setShowHint] = useState(false)
   const [completedTaskNumber, setCompletedTaskNumber] = useState<number | null>(null)
+  const [completedTaskMessage, setCompletedTaskMessage] = useState('')
 
   useEffect(() => {
     try {
@@ -108,18 +140,17 @@ function App() {
 
     const timeoutId = window.setTimeout(() => {
       setCompletedTaskNumber(null)
+      setCompletedTaskMessage('')
       setAnswer('')
       setShowHint(false)
       setConsoleEntries([{ type: 'info', text: 'Enter your answer and run the tests.' }])
-    }, 1200)
+    }, 5000)
 
     return () => window.clearTimeout(timeoutId)
   }, [completedTaskNumber])
 
   const selectedNode = mapNodes.find((node) => node.id === selectedNodeId)
-  const currentExercise = exercises.find(
-    (exercise) => exercise.nodeId === selectedNodeId,
-  )
+  const currentExercise = exercises.find((exercise) => exercise.id === selectedExerciseId)
 
   function runTests() {
     if (!currentExercise) {
@@ -143,18 +174,52 @@ function App() {
       return
     }
 
+    if (gameState.completedExerciseIds.includes(currentExercise.id)) {
+      setConsoleEntries([{ type: 'info', text: 'This task is already completed.' }])
+      setShowHint(false)
+      return
+    }
+
     setCompletedTaskNumber(exercises.indexOf(currentExercise) + 1)
-    setSelectedNodeId(selectedNode?.unlocks ?? selectedNodeId)
-    setGameState((state) => solveCurrentNode(state))
+    setCompletedTaskMessage(result.message)
+    const savedPetSound = 'savedValue' in result ? result.savedValue : undefined
+    const nextExercise = exercises.find(
+      (exercise) =>
+        exercise.nodeId === selectedNodeId &&
+        exercise.id !== currentExercise.id &&
+        !gameState.completedExerciseIds.includes(exercise.id),
+    )
+    const nextNode = selectedNode?.unlocks
+      ? mapNodes.find((node) => node.id === selectedNode.unlocks)
+      : undefined
+    const firstNextExercise = nextNode
+      ? exercises.find((exercise) => exercise.nodeId === nextNode.id)
+      : undefined
+
+    if (nextExercise) {
+      setSelectedExerciseId(nextExercise.id)
+    } else if (nextNode) {
+      setSelectedNodeId(nextNode.id)
+      setSelectedExerciseId(firstNextExercise?.id ?? '')
+    }
+
+    setGameState((state) => {
+      const completedState = completeExercise(state, currentExercise.id)
+      return savedPetSound ? { ...completedState, petSound: savedPetSound } : completedState
+    })
   }
 
   function resetGame() {
     const initialState = createInitialState()
     setGameState(initialState)
     setSelectedNodeId(initialState.currentNodeId)
+    setSelectedExerciseId(
+      exercises.find((exercise) => exercise.nodeId === initialState.currentNodeId)?.id ?? '',
+    )
     setAnswer('')
     setShowHint(false)
     setCompletedTaskNumber(null)
+    setCompletedTaskMessage('')
     setConsoleEntries([{ type: 'info', text: 'Progress reset. The farm is waiting again.' }])
   }
 
@@ -163,7 +228,7 @@ function App() {
       <header className="hud">
         <div className="brand">SOLAR BEAN</div>
         <button type="button" className="reset-button" onClick={resetGame}>
-          RESET
+          RESET GAME
         </button>
       </header>
 
@@ -176,9 +241,18 @@ function App() {
           selectedNodeId={selectedNodeId}
           isComplete={gameState.fixedNodeIds.includes('beacon')}
           petVariant={gameState.fixedNodeIds.includes('pet-barn') ? 'raccoon' : 'dog'}
-          petSpeech={gameState.fixedNodeIds.includes('pet-barn') ? 'Chitter!' : 'Woof!'}
+          petSpeech={
+            gameState.fixedNodeIds.includes('pet-barn')
+              ? gameState.petSound ?? 'Chitter!'
+              : 'Woof!'
+          }
           onSelectNode={(node) => {
             setSelectedNodeId(node.id)
+            const nodeExercises = exercises.filter((exercise) => exercise.nodeId === node.id)
+            const nextExercise = nodeExercises.find(
+              (exercise) => !gameState.completedExerciseIds.includes(exercise.id),
+            )
+            setSelectedExerciseId(nextExercise?.id ?? nodeExercises[nodeExercises.length - 1]?.id ?? '')
             setAnswer('')
             setShowHint(false)
             setConsoleEntries([{ type: 'info', text: 'Enter your answer and run the tests.' }])
@@ -191,6 +265,7 @@ function App() {
             nodeName={selectedNode?.name ?? 'Unknown node'}
             exercise={currentExercise}
             completedTaskNumber={completedTaskNumber}
+            completedTaskMessage={completedTaskMessage}
             answer={answer}
             consoleEntries={consoleEntries}
             showHint={showHint}

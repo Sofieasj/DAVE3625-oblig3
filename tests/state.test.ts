@@ -1,12 +1,22 @@
 import { describe, expect, it } from 'vitest'
 
+import { exercises } from '../src/data/exercises'
 import { mapNodes } from '../src/data/nodes'
-import { createInitialState, getNodeStatus, solveCurrentNode } from '../src/game/state'
+import { completeExercise, createInitialState, getNodeStatus } from '../src/game/state'
 
 describe('game progress', () => {
   it('places farm tasks along the requested winding route', () => {
-    const [seedShed, waterPump, windmill, greenhouse, petBarn, solarRoof] = mapNodes
+    const [seedShed, waterPump, windmill, greenhouse, solarRoof, petBarn] = mapNodes
 
+    expect(mapNodes.map((node) => node.id)).toEqual([
+      'seed-shed',
+      'water-pump',
+      'windmill',
+      'greenhouse',
+      'solar-roof',
+      'pet-barn',
+      'beacon',
+    ])
     expect(seedShed.position.x).toBe(waterPump.position.x)
     expect(seedShed.position.y).toBeGreaterThan(waterPump.position.y)
     expect(seedShed.position.y - waterPump.position.y).toBeGreaterThanOrEqual(300)
@@ -14,11 +24,20 @@ describe('game progress', () => {
     expect(windmill.position.x).toBe(greenhouse.position.x)
     expect(windmill.position.y).toBeLessThan(greenhouse.position.y)
     expect(greenhouse.position.y - windmill.position.y).toBeGreaterThanOrEqual(300)
-    expect(greenhouse.position.y).toBe(petBarn.position.y)
-    expect(greenhouse.position.x).toBeLessThan(petBarn.position.x)
-    expect(solarRoof.position.x).toBe(petBarn.position.x)
+    expect(greenhouse.position.x).toBeLessThan(solarRoof.position.x)
     expect(solarRoof.position.y).toBeLessThan(petBarn.position.y)
     expect(solarRoof.position.y).toBeGreaterThan(mapNodes[6].position.y)
+  })
+
+  it('maps every exercise to exactly one farm node', () => {
+    const nodeExerciseIds = mapNodes.flatMap((node) => node.exerciseIds)
+    expect(new Set(nodeExerciseIds)).toEqual(new Set(exercises.map((exercise) => exercise.id)))
+
+    for (const node of mapNodes) {
+      for (const exerciseId of node.exerciseIds) {
+        expect(exercises.find((exercise) => exercise.id === exerciseId)?.nodeId).toBe(node.id)
+      }
+    }
   })
 
   it('starts with the first node current and the rest locked', () => {
@@ -36,43 +55,50 @@ describe('game progress', () => {
     ])
   })
 
-  it('fixes the current node and unlocks the next node', () => {
+  it('keeps Seed Shed current until both tasks are complete', () => {
     const initialState = createInitialState()
-    const solvedState = solveCurrentNode(initialState)
+    const firstTaskState = completeExercise(initialState, 'seed-shed-1')
 
-    expect(getNodeStatus(solvedState, mapNodes[0])).toBe('fixed')
-    expect(getNodeStatus(solvedState, mapNodes[1])).toBe('current')
-    expect(solvedState.currentNodeId).toBe(mapNodes[1].id)
-    expect(solvedState.fixedNodeIds).toContain(mapNodes[0].id)
+    expect(getNodeStatus(firstTaskState, mapNodes[0])).toBe('current')
+    expect(getNodeStatus(firstTaskState, mapNodes[1])).toBe('locked')
+    expect(firstTaskState.currentNodeId).toBe(mapNodes[0].id)
+    expect(firstTaskState.completedExerciseIds).toContain('seed-shed-1')
     expect(initialState.fixedNodeIds).toEqual([])
 
-    const waterPumpSolvedState = solveCurrentNode(solvedState)
+    const seedShedSolvedState = completeExercise(firstTaskState, 'seed-shed-2')
+    expect(getNodeStatus(seedShedSolvedState, mapNodes[0])).toBe('fixed')
+    expect(getNodeStatus(seedShedSolvedState, mapNodes[1])).toBe('current')
+    expect(seedShedSolvedState.currentNodeId).toBe(mapNodes[1].id)
+    expect(seedShedSolvedState.fixedNodeIds).toContain(mapNodes[0].id)
+
+    const invalidExerciseState = completeExercise(seedShedSolvedState, 'windmill-1')
+    expect(invalidExerciseState).toBe(seedShedSolvedState)
+
+    const firstWaterPumpTaskState = completeExercise(seedShedSolvedState, 'water-pump-1')
+    expect(getNodeStatus(firstWaterPumpTaskState, mapNodes[1])).toBe('current')
+    expect(firstWaterPumpTaskState.currentNodeId).toBe(mapNodes[1].id)
+    const waterPumpSolvedState = completeExercise(firstWaterPumpTaskState, 'water-pump-2')
     expect(getNodeStatus(waterPumpSolvedState, mapNodes[1])).toBe('fixed')
     expect(getNodeStatus(waterPumpSolvedState, mapNodes[2])).toBe('current')
     expect(waterPumpSolvedState.currentNodeId).toBe(mapNodes[2].id)
+  })
 
-    const windmillSolvedState = solveCurrentNode(waterPumpSolvedState)
-    expect(getNodeStatus(windmillSolvedState, mapNodes[2])).toBe('fixed')
-    expect(getNodeStatus(windmillSolvedState, mapNodes[3])).toBe('current')
-    expect(windmillSolvedState.currentNodeId).toBe(mapNodes[3].id)
+  it('can complete every node in order', () => {
+    let state = createInitialState()
 
-    const greenhouseSolvedState = solveCurrentNode(windmillSolvedState)
-    expect(getNodeStatus(greenhouseSolvedState, mapNodes[3])).toBe('fixed')
-    expect(getNodeStatus(greenhouseSolvedState, mapNodes[4])).toBe('current')
-    expect(greenhouseSolvedState.currentNodeId).toBe(mapNodes[4].id)
+    for (const node of mapNodes) {
+      expect(state.currentNodeId).toBe(node.id)
 
-    const petBarnSolvedState = solveCurrentNode(greenhouseSolvedState)
-    expect(getNodeStatus(petBarnSolvedState, mapNodes[4])).toBe('fixed')
-    expect(getNodeStatus(petBarnSolvedState, mapNodes[5])).toBe('current')
-    expect(petBarnSolvedState.currentNodeId).toBe(mapNodes[5].id)
+      for (const exerciseId of node.exerciseIds) {
+        state = completeExercise(state, exerciseId)
+      }
 
-    const solarRoofSolvedState = solveCurrentNode(petBarnSolvedState)
-    expect(getNodeStatus(solarRoofSolvedState, mapNodes[5])).toBe('fixed')
-    expect(getNodeStatus(solarRoofSolvedState, mapNodes[6])).toBe('current')
-    expect(solarRoofSolvedState.currentNodeId).toBe(mapNodes[6].id)
+      expect(state.fixedNodeIds).toContain(node.id)
+      if (node.unlocks) {
+        expect(state.currentNodeId).toBe(node.unlocks)
+      }
+    }
 
-    const beaconSolvedState = solveCurrentNode(solarRoofSolvedState)
-    expect(getNodeStatus(beaconSolvedState, mapNodes[6])).toBe('fixed')
-    expect(beaconSolvedState.fixedNodeIds).toContain('beacon')
+    expect(state.fixedNodeIds).toEqual(mapNodes.map((node) => node.id))
   })
 })
