@@ -200,7 +200,7 @@ SolarPanels solarPanels = new SolarPanels();
 // your line goes here`,
     acceptedAnswers: ['battery.connect(solarPanels);'],
     acceptedPatterns: [String.raw`^battery\.connect\(\s*solarPanels\s*\)\s*;$`],
-    hint: 'Start with the object (battery), then a dot, then the method name with the thing to connect in parentheses.',
+    hint: 'Start with the object (battery), then a dot, then the method (connect), with the thing to connect as an argument in parentheses.',
     failMessage:
       'Check the order: object, dot, method name, then the argument in parentheses, then a semicolon.',
     successMessage: 'Click! The roof soaks up the sunshine and the battery glows green.',
@@ -213,7 +213,7 @@ SolarPanels solarPanels = new SolarPanels();
     story:
       'A raccoon keeps sneaking into the barn for snacks. Bean says: "Let us make it the farm’s official pet!"',
     lesson:
-      'Pet already has a name and a sound. The keyword that means "is a kind of" lets Raccoon reuse all of it.',
+      'Pet already has a name and a sound, that Raccoon can inherit. The keyword that means "is a kind of" lets Raccoon reuse all of it.',
     prompt: 'Make Raccoon a kind of Pet.',
     starterCode: `class Pet {
 String name;

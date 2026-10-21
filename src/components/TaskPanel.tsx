@@ -10,6 +10,7 @@ type TaskPanelProps = {
   exercise: Exercise | undefined
   completedTaskNumber: number | null
   completedTaskMessage: string
+  onNext: () => void
   answer: string
   consoleEntries: ConsoleEntry[]
   showHint: boolean
@@ -23,6 +24,7 @@ export function TaskPanel({
   exercise,
   completedTaskNumber,
   completedTaskMessage,
+  onNext,
   answer,
   consoleEntries,
   showHint,
@@ -35,6 +37,9 @@ export function TaskPanel({
       <aside className="terminal-panel task-complete" aria-label="Task completed" aria-live="polite">
         <h1>Task {completedTaskNumber} completed!</h1>
         {completedTaskMessage && <p className="mission-copy">{completedTaskMessage}</p>}
+        <button type="button" className="next-button" onClick={onNext}>
+          NEXT
+        </button>
       </aside>
     )
   }

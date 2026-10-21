@@ -8,7 +8,7 @@ type OverworldMapProps = {
   getNodeStatus: (node: MapNode) => NodeStatus
   selectedNodeId: string
   isComplete: boolean
-  petVariant: 'dog' | 'raccoon'
+  petAdopted: boolean
   petSpeech: string
   onSelectNode: (node: MapNode) => void
 }
@@ -18,7 +18,7 @@ export function OverworldMap({
   getNodeStatus,
   selectedNodeId,
   isComplete,
-  petVariant,
+  petAdopted,
   petSpeech,
   onSelectNode,
 }: OverworldMapProps) {
@@ -32,6 +32,7 @@ export function OverworldMap({
   const previousNodeId = useRef(currentNode?.id)
   const dragStart = useRef<{ pointerId: number; x: number; y: number; offsetX: number; offsetY: number } | null>(null)
   const [mapOffset, setMapOffset] = useState({ x: 0, y: -250 })
+  const [tokenNodeId, setTokenNodeId] = useState(currentNode?.id)
   const mapScale = isComplete ? 1.18 : 1
 
   useEffect(() => {
@@ -42,7 +43,7 @@ export function OverworldMap({
     const surface = surfaceRef.current
     const minX = Math.min(...nodes.map((node) => node.position.x))
     const minY = Math.min(...nodes.map((node) => node.position.y))
-    const maxX = Math.max(...nodes.map((node) => node.position.x + 120))
+    const maxX = Math.max(...nodes.map((node) => node.position.x + 202))
     const maxY = Math.max(...nodes.map((node) => node.position.y + 62))
     const nodesCenterX = (minX + maxX) / 2
     const nodesCenterY = (minY + maxY) / 2
@@ -66,13 +67,25 @@ export function OverworldMap({
       return
     }
 
+    token.dataset.walking = 'true'
     const path = createPath(fromNode, currentNode)
     token.style.offsetPath = `path("${path}")`
     token.style.offsetDistance = '0%'
     void token.getBoundingClientRect()
-    requestAnimationFrame(() => {
+    const frameId = requestAnimationFrame(() => {
       token.style.offsetDistance = '100%'
     })
+
+    const timeoutId = window.setTimeout(() => {
+      token.dataset.walking = 'false'
+      setTokenNodeId(currentNode.id)
+    }, 1800)
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      window.clearTimeout(timeoutId)
+      token.dataset.walking = 'false'
+    }
   }, [currentNode, nodes])
 
   function startPan(event: PointerEvent<HTMLDivElement>) {
@@ -153,38 +166,38 @@ export function OverworldMap({
           }
 
           return (
-            <button
-              key={node.id}
-              type="button"
-              className={`node-card ${status} ${node.id === selectedNodeId ? 'selected' : ''}`}
-              style={style}
-              aria-label={`${node.name}: ${status}`}
-              disabled={status === 'locked'}
-              onClick={() => onSelectNode(node)}
-              onPointerDown={(event) => event.stopPropagation()}
-            >
-              <span className="node-badge">{index + 1}</span>
-              {status === 'locked' && (
-                <svg
-                  className="lock-mark"
-                  viewBox="0 0 16 16"
-                  role="img"
-                  aria-label="Locked"
-                  shapeRendering="crispEdges"
-                >
-                  <path d="M4 7V5a4 4 0 0 1 8 0v2h1v8H3V7h1Zm2 0h4V5a2 2 0 1 0-4 0v2Zm2 2a1 1 0 0 0-1 1c0 .4.2.7.5.9V13h1v-2.1c.3-.2.5-.5.5-.9a1 1 0 0 0-1-1Z" />
-                </svg>
-              )}
-              <span className="node-label">{node.name}</span>
-              {node.id === 'solar-roof' && status === 'fixed' && (
-                <span className="installed-panels" aria-label="Solar panels installed">
-                  <span />
-                  <span />
-                  <span />
+            <div className={`node-anchor ${node.id}`} key={node.id} style={style}>
+              <button
+                type="button"
+                className={`node-card ${status} ${node.id === selectedNodeId ? 'selected' : ''}`}
+                aria-label={`${node.name}: ${status}`}
+                disabled={status === 'locked'}
+                onClick={() => onSelectNode(node)}
+                onPointerDown={(event) => event.stopPropagation()}
+              >
+                <span className="node-meta">
+                  <span className="node-badge">{index + 1}</span>
+                  {status === 'locked' && (
+                    <svg
+                      className="lock-mark"
+                      viewBox="0 0 16 16"
+                      role="img"
+                      aria-label="Locked"
+                      shapeRendering="crispEdges"
+                    >
+                      <path d="M4 7V5a4 4 0 0 1 8 0v2h1v8H3V7h1Zm2 0h4V5a2 2 0 1 0-4 0v2Zm2 2a1 1 0 0 0-1 1c0 .4.2.7.5.9V13h1v-2.1c.3-.2.5-.5.5-.9a1 1 0 0 0-1-1Z" />
+                    </svg>
+                  )}
+                  <span className="node-label">{node.name}</span>
                 </span>
-              )}
-              {status === 'current' && <span className="alert-mark" aria-hidden="true">!</span>}
-            </button>
+              </button>
+              <span className={`building-sprite ${node.id} ${status}`} aria-hidden="true">
+                <span className="building-roof" />
+                <span className="building-body" />
+                <span className="building-feature" />
+                <span className="building-detail" />
+              </span>
+            </div>
           )
         })}
 
@@ -192,20 +205,30 @@ export function OverworldMap({
           <div
             ref={tokenRef}
             className="player-token"
+            data-walking="false"
             style={{
-              left: `${currentNode.position.x + 48}px`,
-              top: `${currentNode.position.y + 14}px`,
+              left: '0px',
+              top: '0px',
+              offsetPath: `path("M ${currentNode.position.x + 60} ${currentNode.position.y + 84}")`,
+              offsetDistance: '0%',
             }}
             aria-label={`Player at ${currentNode.name}`}
           >
             <span className="token-head" />
             <span className="token-body" />
-            <span className={`pet-companion ${petVariant}`} aria-hidden="true">
-              <span className="pet-ear" />
-              <span className="pet-mask" />
-              <span className="pet-tail" />
-            </span>
-            <span className="pet-speech" aria-live="polite">{petSpeech}</span>
+            <span className="token-leg token-leg-left" />
+            <span className="token-leg token-leg-right" />
+            {(petAdopted ||
+              (tokenNodeId === 'pet-barn' && currentNode.id !== 'seed-shed')) && (
+              <>
+                <span className="pet-companion raccoon" aria-hidden="true">
+                  <span className="pet-ear" />
+                  <span className="pet-mask" />
+                  <span className="pet-tail" />
+                </span>
+                <span className="pet-speech" aria-live="polite">{petSpeech}</span>
+              </>
+            )}
           </div>
         )}
         </div>
@@ -216,9 +239,9 @@ export function OverworldMap({
 
 function createPath(fromNode: MapNode, toNode: MapNode): string {
   const startX = fromNode.position.x + 60
-  const startY = fromNode.position.y + 31
+  const startY = fromNode.position.y + 84
   const endX = toNode.position.x + 60
-  const endY = toNode.position.y + 31
+  const endY = toNode.position.y + 84
   const controlX = (startX + endX) / 2
   const controlY = (startY + endY) / 2 + (endX >= startX ? -42 : 42)
 

@@ -133,24 +133,16 @@ function App() {
     }
   }, [gameState])
 
-  useEffect(() => {
-    if (completedTaskNumber === null) {
-      return
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setCompletedTaskNumber(null)
-      setCompletedTaskMessage('')
-      setAnswer('')
-      setShowHint(false)
-      setConsoleEntries([{ type: 'info', text: 'Enter your answer and run the tests.' }])
-    }, 5000)
-
-    return () => window.clearTimeout(timeoutId)
-  }, [completedTaskNumber])
-
   const selectedNode = mapNodes.find((node) => node.id === selectedNodeId)
   const currentExercise = exercises.find((exercise) => exercise.id === selectedExerciseId)
+
+  function continueToNextTask() {
+    setCompletedTaskNumber(null)
+    setCompletedTaskMessage('')
+    setAnswer('')
+    setShowHint(false)
+    setConsoleEntries([{ type: 'info', text: 'Enter your answer and run the tests.' }])
+  }
 
   function runTests() {
     if (!currentExercise) {
@@ -180,9 +172,12 @@ function App() {
       return
     }
 
-    setCompletedTaskNumber(exercises.indexOf(currentExercise) + 1)
-    setCompletedTaskMessage(result.message)
     const savedPetSound = 'savedValue' in result ? result.savedValue : undefined
+    const completedState = completeExercise(gameState, currentExercise.id)
+    const farmRestored = completedState.fixedNodeIds.includes('beacon')
+
+    setCompletedTaskNumber(farmRestored ? null : exercises.indexOf(currentExercise) + 1)
+    setCompletedTaskMessage(farmRestored ? '' : result.message)
     const nextExercise = exercises.find(
       (exercise) =>
         exercise.nodeId === selectedNodeId &&
@@ -203,10 +198,9 @@ function App() {
       setSelectedExerciseId(firstNextExercise?.id ?? '')
     }
 
-    setGameState((state) => {
-      const completedState = completeExercise(state, currentExercise.id)
-      return savedPetSound ? { ...completedState, petSound: savedPetSound } : completedState
-    })
+    setGameState(
+      savedPetSound ? { ...completedState, petSound: savedPetSound } : completedState,
+    )
   }
 
   function resetGame() {
@@ -240,12 +234,8 @@ function App() {
           getNodeStatus={(node) => getNodeStatus(gameState, node)}
           selectedNodeId={selectedNodeId}
           isComplete={gameState.fixedNodeIds.includes('beacon')}
-          petVariant={gameState.fixedNodeIds.includes('pet-barn') ? 'raccoon' : 'dog'}
-          petSpeech={
-            gameState.fixedNodeIds.includes('pet-barn')
-              ? gameState.petSound ?? 'Chitter!'
-              : 'Woof!'
-          }
+          petAdopted={gameState.fixedNodeIds.includes('pet-barn')}
+          petSpeech={gameState.petSound ?? 'Chitter!'}
           onSelectNode={(node) => {
             setSelectedNodeId(node.id)
             const nodeExercises = exercises.filter((exercise) => exercise.nodeId === node.id)
@@ -266,6 +256,7 @@ function App() {
             exercise={currentExercise}
             completedTaskNumber={completedTaskNumber}
             completedTaskMessage={completedTaskMessage}
+            onNext={continueToNextTask}
             answer={answer}
             consoleEntries={consoleEntries}
             showHint={showHint}

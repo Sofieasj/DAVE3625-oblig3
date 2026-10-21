@@ -55,7 +55,7 @@ describe('exercise validation', () => {
     expect(validateExerciseAnswer(waterPumpChoice, '<').isCorrect).toBe(false)
   })
 
-  it.each(['if (waterLevel == 0) {', 'if(waterLevel==0){'])(
+  it.each(['if (waterLevel == 0) ', 'if(waterLevel==0)'])(
     'accepts the Water Pump leak-check fix: %s',
     (answer) => {
       expect(validateExerciseAnswer(waterPumpFix, answer).isCorrect).toBe(true)
