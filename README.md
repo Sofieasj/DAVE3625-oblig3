@@ -55,7 +55,7 @@ npm run preview # preview the production build locally
 
 ## Deployment
 
-Vite is configured with `/solar-bean/` as its base path for a static deployment under that repository path. Add the public GitHub Pages URL here once the site has been published.
+Vite is configured with `/DAVE3625-oblig3/` as its base path for the GitHub Pages project site. After deployment, open `https://sofieasj.github.io/DAVE3625-oblig3/`.
 
 ## How AI was used
 
