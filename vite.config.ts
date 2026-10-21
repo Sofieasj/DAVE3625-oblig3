@@ -3,5 +3,5 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/solar-bean/',
+  base: 'sofieasj.github.io', // repo name
 })
