@@ -31,16 +31,16 @@ export function OverworldMap({
   const contentRef = useRef<HTMLDivElement>(null)
   const previousNodeId = useRef(currentNode?.id)
   const dragStart = useRef<{ pointerId: number; x: number; y: number; offsetX: number; offsetY: number } | null>(null)
-  const [mapOffset, setMapOffset] = useState({ x: 0, y: -250 })
+  const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 })
   const [tokenNodeId, setTokenNodeId] = useState(currentNode?.id)
   const mapScale = isComplete ? 1.18 : 1
 
   useEffect(() => {
-    if (!isComplete || !surfaceRef.current) {
+    const surface = surfaceRef.current
+    if (!surface) {
       return
     }
 
-    const surface = surfaceRef.current
     const minX = Math.min(...nodes.map((node) => node.position.x))
     const minY = Math.min(...nodes.map((node) => node.position.y))
     const maxX = Math.max(...nodes.map((node) => node.position.x + 202))
@@ -48,11 +48,18 @@ export function OverworldMap({
     const nodesCenterX = (minX + maxX) / 2
     const nodesCenterY = (minY + maxY) / 2
 
-    setMapOffset({
-      x: surface.clientWidth / 2 - nodesCenterX * mapScale,
-      y: surface.clientHeight / 2 - nodesCenterY * mapScale,
-    })
-  }, [isComplete, mapScale, nodes])
+    const centerMap = () => {
+      setMapOffset({
+        x: surface.clientWidth / 2 - nodesCenterX * mapScale,
+        y: surface.clientHeight / 2 - nodesCenterY * mapScale,
+      })
+    }
+
+    centerMap()
+    const resizeObserver = new ResizeObserver(centerMap)
+    resizeObserver.observe(surface)
+    return () => resizeObserver.disconnect()
+  }, [mapScale, nodes])
 
   useEffect(() => {
     if (!currentNode || previousNodeId.current === currentNode.id) {
@@ -154,7 +161,17 @@ export function OverworldMap({
             const path = createPath(node, nextNode)
             const status = getNodeStatus(node) === 'fixed' ? 'completed' : 'locked'
 
-            return <path key={`${node.id}-${nextNode.id}`} className={`map-path ${status}`} d={path} />
+            const singleLayerPath =
+              (node.id === 'solar-roof' && nextNode.id === 'pet-barn') ||
+              (node.id === 'pet-barn' && nextNode.id === 'solar-roof')
+
+            return (
+              <path
+                key={`${node.id}-${nextNode.id}`}
+                className={`map-path ${status} ${singleLayerPath ? 'single-layer' : ''}`}
+                d={path}
+              />
+            )
           })}
         </svg>
 

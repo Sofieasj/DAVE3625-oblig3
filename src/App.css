@@ -3,7 +3,7 @@
   width: min(1280px, 100%);
   min-height: 760px;
   margin: 0 auto;
-  padding: 12px 18px 20px;
+  padding: 8px 18px;
   color: var(--color-cream);
   box-sizing: border-box;
 }
@@ -22,9 +22,12 @@
 
 .brand {
   font-family: var(--font-primary);
-  font-size: 12px;
-  letter-spacing: 1px;
+  font-size: 20px;
+  letter-spacing: 4px;
   color: var(--color-cream);
+  -webkit-font-smoothing: none;
+  image-rendering: pixelated;
+  text-shadow: 2px 0 0 var(--color-gold-border), 0 2px 0 var(--color-gold-border);
 }
 
 .reset-button,
@@ -55,7 +58,7 @@
   display: grid;
   grid-template-columns: minmax(0, 760px) minmax(360px, 520px);
   gap: 18px;
-  margin-top: 18px;
+  margin-top: 10px;
 }
 
 .game-layout.game-complete {
@@ -107,6 +110,7 @@
   inset: 0 auto auto 0;
   width: 720px;
   height: 940px;
+  transform-origin: top left;
   will-change: transform;
   user-select: none;
 }
@@ -116,6 +120,7 @@
   inset: 0 auto auto 0;
   width: 720px;
   height: 940px;
+  transform: translateY(-64px);
   overflow: visible;
   pointer-events: none;
 }
@@ -125,6 +130,10 @@
   stroke-width: 9px;
   stroke-linecap: square;
   stroke-dasharray: 2 10;
+}
+
+.map-path.single-layer {
+  stroke-width: 4px;
 }
 
 .map-path.completed {
@@ -802,7 +811,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .mission-pill {
@@ -823,6 +832,9 @@
 }
 
 .mission-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   color: var(--color-mint);
   font-family: var(--font-secondary);
   font-size: 24px;
@@ -830,9 +842,22 @@
   margin-bottom: 16px;
 }
 
+.prompt-help-icon {
+  display: grid;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 1;
+}
+
 .bean-story,
 .java-lesson {
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   font-family: var(--font-secondary);
   font-size: 20px;
   line-height: 1.2;
@@ -945,8 +970,30 @@ textarea#answer-input {
 }
 
 .primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   background: var(--color-hud);
   color: var(--color-amber);
+}
+
+.secondary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.button-label {
+  line-height: 1;
+  transform: translateY(2px);
 }
 
 /* Console messages and hints */

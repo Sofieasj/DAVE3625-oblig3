@@ -53,7 +53,7 @@ export const exercises: Exercise[] = [
     id: 'seed-shed-1',
     nodeId: 'seed-shed',
     type: 'fill-blank',
-    title: 'Seed Shed: Count the seed packets',
+    title: 'Seed Shed: Store the seeds',
     story:
       'Bean blinks awake in the Seed Shed. "The storm wiped my memory! I know we still have 12 seed packets. Help me store that number."',
     lesson:
@@ -62,9 +62,9 @@ export const exercises: Exercise[] = [
     starterCode: '___ seedPackets = 12;',
     options: ['int', 'String', 'boolean'],
     acceptedAnswers: ['int'],
-    hint: 'Whole numbers like 12 use int. String is for text.',
+    hint: 'Whole numbers like 12 are Integers. String is for text.',
     failMessage: 'That type cannot hold a number like 12. Try another one.',
-    successMessage: 'Bean beeps: "12 packets saved!" The Seed Shed roof snaps back into place.',
+    successMessage: 'Bean beeps: "12 packets saved!"',
   },
   {
     id: 'seed-shed-2',
@@ -101,7 +101,7 @@ export const exercises: Exercise[] = [
     acceptedAnswers: ['>'],
     hint: 'You want MORE than zero. Which symbol points that way?',
     failMessage: 'Not that one. If waterLevel is 0, the pump should stay off.',
-    successMessage: 'The pump gurgles to life and water flows toward the Seed Shed.',
+    successMessage: 'The pump gurgles to life and water flows. Now we can water the seeds!',
   },
   {
     id: 'water-pump-2',

@@ -69,7 +69,10 @@ export function TaskPanel({
           {exercise.lesson && <p className="java-lesson">JAVA TIP: {exercise.lesson}</p>}
         </div>
       )}
-      <p className="mission-copy">{exercise.prompt}</p>
+      <p className="mission-copy">
+        <span className="prompt-help-icon" aria-hidden="true">?</span>
+        <span>{exercise.prompt}</span>
+      </p>
 
       {exercise.type === 'quiz' ? (
         <fieldset className="quiz-options">
@@ -136,7 +139,7 @@ export function TaskPanel({
             </pre>
           )}
           <label className="field-label" htmlFor="answer-input">
-            {exercise.type === 'fix-code' ? 'Rewrite the broken line' : 'Write your Java line'}
+            {exercise.type === 'fix-code' ? 'Rewrite the broken line:' : 'Write your Java line:'}
           </label>
           <textarea
             id="answer-input"
@@ -150,10 +153,11 @@ export function TaskPanel({
 
       <div className="button-row">
         <button type="button" className="primary-button" onClick={onRunTests}>
-          RUN TESTS
+          <span className="play-icon" aria-hidden="true">▶</span>
+          <span className="button-label">RUN TESTS</span>
         </button>
         <button type="button" className="secondary-button" onClick={onShowHint}>
-          HINT
+          <span className="button-label">HINT</span>
         </button>
       </div>
 
