@@ -53,7 +53,7 @@ export const exercises: Exercise[] = [
     id: 'seed-shed-1',
     nodeId: 'seed-shed',
     type: 'fill-blank',
-    title: 'Seed Shed: Count the seed packets',
+    title: 'Seed Shed: Store the seeds',
     story:
       'Bean blinks awake in the Seed Shed. "The storm wiped my memory! I know we still have 12 seed packets. Help me store that number."',
     lesson:
@@ -62,9 +62,9 @@ export const exercises: Exercise[] = [
     starterCode: '___ seedPackets = 12;',
     options: ['int', 'String', 'boolean'],
     acceptedAnswers: ['int'],
-    hint: 'Whole numbers like 12 use int. String is for text.',
+    hint: 'Whole numbers like 12 are Integers. String is for text.',
     failMessage: 'That type cannot hold a number like 12. Try another one.',
-    successMessage: 'Bean beeps: "12 packets saved!" The Seed Shed roof snaps back into place.',
+    successMessage: 'Bean beeps: "12 packets saved!"',
   },
   {
     id: 'seed-shed-2',
@@ -101,7 +101,7 @@ export const exercises: Exercise[] = [
     acceptedAnswers: ['>'],
     hint: 'You want MORE than zero. Which symbol points that way?',
     failMessage: 'Not that one. If waterLevel is 0, the pump should stay off.',
-    successMessage: 'The pump gurgles to life and water flows toward the Seed Shed.',
+    successMessage: 'The pump gurgles to life and water flows. Now we can water the seeds!',
   },
   {
     id: 'water-pump-2',
@@ -129,7 +129,7 @@ export const exercises: Exercise[] = [
     title: 'Windmill: Spin the blades',
     story:
       'The pump needs power, and the windmill is the only generator left. Its program should turn the blades 4 times, but it counts the wrong way and never stops.',
-    lesson: 'A for loop repeats code. i++ adds 1 each lap. i-- subtracts 1.',
+    lesson: 'A for loop repeats code. i++ increases the lap number by 1. i-- subtracts 1.',
     prompt: 'Fix line 1 so the loop counts up and the blades turn 4 times.',
     starterCode: `for (int i = 0; i < 4; i--) {
     blades.rotate();
@@ -150,19 +150,19 @@ export const exercises: Exercise[] = [
     id: 'greenhouse-1',
     nodeId: 'greenhouse',
     type: 'fill-blank',
-    title: 'Greenhouse: The first tray',
+    title: 'Greenhouse: Water the tomatoes',
     story:
-      'With the windmill turning, Bean unlocks the greenhouse. Three seed trays hold the first seedlings, and Bean wants to water the first one.',
+      'With the windmill turning, Bean unlocks the greenhouse. Three seed trays hold the first seedlings, and Bean wants to water the tomatoes.',
     lesson:
       'An array holds a list of values. Java counts positions from 0, so the first item is at index 0.',
     prompt: 'Fill in the index of the FIRST tray.',
-    starterCode: `int[] trays = {4, 8, 15};
-int first = trays[___];`,
-    options: ['0', '1', '4'],
+    starterCode: `String[] trays = {"Tomatoes", "Pumpkins", "Sweet peas"};
+String toWater = trays[___];`,
+    options: ['0', '1', '2'],
     acceptedAnswers: ['0'],
-    hint: 'Computers start counting at 0, not 1.',
+    hint: 'Computers start counting at 0, not 1. Tomato seedlings are the first value in the array.',
     failMessage: 'Remember: the index is a position, not the value stored there.',
-    successMessage: 'Tray 0 starts watering. Tiny green sprouts poke through the soil.',
+    successMessage: 'Tray 0 starts watering. Tiny green sprouts poke through the soil!',
   },
   {
     id: 'greenhouse-2',
@@ -174,16 +174,16 @@ int first = trays[___];`,
     lesson:
       'An array with 3 items has indexes 0, 1 and 2. Asking for index 3 crashes Java.',
     prompt: 'Fix line 2 so it reads the LAST of the three trays.',
-    starterCode: `int[] trays = {4, 8, 15};
-int last = trays[3];`,
+    starterCode: `String[] trays = {"Tomatoes", "Pumpkins", "Sweet peas"};
+String lastTray = trays[3];`,
     editableLine: 2,
-    acceptedAnswers: ['int last = trays[2];'],
+    acceptedAnswers: ['String lastTray = trays[2];'],
     acceptedPatterns: [
       String.raw`^int\s+last\s*=\s*trays\[\s*(2|trays\.length\s*-\s*1)\s*\]\s*;$`,
     ],
     hint: 'Three items means the indexes are 0, 1 and...?',
     failMessage: 'Count the indexes from 0. Which one is the last of three?',
-    successMessage: 'No more crash! The greenhouse glass clears and sunlight pours in.',
+    successMessage: 'No more crash! The plants are watered and growing happily!',
   },
   {
     id: 'solar-roof-1',
@@ -191,30 +191,30 @@ int last = trays[3];`,
     type: 'write-line',
     title: 'Solar Roof: Connect the panels',
     story:
-      'The greenhouse needs power at night. Grandma Juniper built a battery and solar panels, but she never connected them.',
+      'The greenhouse needs power at night. Grandma June installed panels and placed a battery beside them to store the energy. But they are not connected yet!',
     lesson:
-      'Objects can do things. object.method(thing) asks the object to run a method, using the thing you pass in.',
-    prompt: 'Write one line that asks battery to connect to solarPanels.',
+      'In Java, you can ask an object to do something by calling one of its methods. Write object.method(argument); The argument tells the method what to work with.',
+    prompt: 'Write one line that tells battery to connect to solarPanels.',
     starterCode: `Battery battery = new Battery();
 SolarPanels solarPanels = new SolarPanels();
 // your line goes here`,
     acceptedAnswers: ['battery.connect(solarPanels);'],
     acceptedPatterns: [String.raw`^battery\.connect\(\s*solarPanels\s*\)\s*;$`],
-    hint: 'Start with the object (battery), then a dot, then the method (connect), with the thing to connect as an argument in parentheses.',
+    hint: 'Start with battery, add a dot and the method name connect, then put solarPanels inside the parentheses.',
     failMessage:
-      'Check the order: object, dot, method name, then the argument in parentheses, then a semicolon.',
-    successMessage: 'Click! The roof soaks up the sunshine and the battery glows green.',
+      'Think of it as giving an instruction to an object: battery.connect(solarPanels); The battery is the object receiving the instruction, and solarPanels is the argument.',
+    successMessage: 'Click! The solar panels are connected to the battery. Sunlight can now power the greenhouse, even after dark!',
   },
   {
     id: 'pet-barn-1',
     nodeId: 'pet-barn',
     type: 'fill-blank',
-    title: 'Pet Barn: Adopt a raccoon',
+    title: 'Pet Barn: Welcome the raccoon',
     story:
-      'A raccoon keeps sneaking into the barn for snacks. Bean says: "Let us make it the farm’s official pet!"',
+      'Bean has decided to give the snack-stealing raccoon a home on the farm. The farm already has a Pet class with a name and a sound. Instead of writing those features all over again, Bean wants Raccoon to reuse what every Pet already has.',
     lesson:
-      'Pet already has a name and a sound, that Raccoon can inherit. The keyword that means "is a kind of" lets Raccoon reuse all of it.',
-    prompt: 'Make Raccoon a kind of Pet.',
+      'Inheritance lets one class reuse features from another class. In Java, the keyword extends means that one class inherits from another. A Raccoon can extend Pet because a raccoon is a kind of pet.',
+    prompt: 'Complete the class declaration so Raccoon inherits from Pet.',
     starterCode: `class Pet {
 String name;
 String sound() { return "..."; }
@@ -224,9 +224,9 @@ class Raccoon ___ Pet {
 }`,
     options: ['extends', 'implements', 'inherits'],
     acceptedAnswers: ['extends'],
-    hint: 'Look at the tip: which keyword means "extends the parent class"?',
-    failMessage: 'Close, but Java uses a different keyword for inheriting from a class.',
-    successMessage: 'The raccoon waddles in, sniffs around and moves into the barn.',
+    hint: 'Java uses a special keyword to say that one class inherits from another.',
+    failMessage: 'Use extends to show that Raccoon inherits features from Pet.',
+    successMessage: 'Welcome home, raccoon! Raccoon can now reuse the features defined in Pet.',
   },
   {
     id: 'pet-barn-2',
@@ -234,10 +234,10 @@ class Raccoon ___ Pet {
     type: 'fix-code',
     title: 'Pet Barn: Give it a voice',
     story:
-      'Pets have a sound() method, but the raccoon only says "...". Time to give it a voice of its own.',
+      'The raccoon has moved into the barn! But when Bean asks what sound it makes, it only says "...". All pets have a sound() method, but each animal can make its own sound. Bean wants the raccoon to have a voice of its own.',
     lesson:
-      '@Override replaces the parent’s method with your own version. return hands back the sound.',
-    prompt: 'Change line 4 so the raccoon makes a sound. You choose the sound!',
+      'A subclass can replace an inherited method with its own version. In Java, @Override marks a method that is intended to replace a method from the parent class. The return statement sends back the sound as a String.',
+    prompt: 'Change line 4 to give the raccoon its own sound. Choose any sound you like!',
     starterCode: `class Raccoon extends Pet {
 @Override
 String sound() {
@@ -248,40 +248,41 @@ return "...";
     acceptedAnswers: [],
     acceptedPatterns: [String.raw`^return\s*"((?!\.\.\.")[^"]{1,20})"\s*;$`],
     savesAs: 'petSound',
-    hint: 'Keep the quotes and the semicolon. Only change the text between the quotes.',
+    hint: 'Keep return, the quotation marks, and the semicolon. Change only the text between the quotation marks.',
     failMessage:
-      'Keep the format return "your sound"; and use 1 to 20 characters that are not just dots.',
-    successMessage: 'The raccoon lets out its very own call. You have a farm pet!',
+      'Write return followed by a sound in quotation marks, then a semicolon. For example, return "chitter";',
+    successMessage: 'Chitter! The raccoon has found its voice. Bean discovers that inherited behavior can be customized!',
   },
   {
     id: 'beacon-1',
     nodeId: 'beacon',
     type: 'quiz',
-    title: 'Beacon: Safety check 1',
-    story: 'The Beacon is wired up! Before it lights, Bean runs two last safety checks.',
-    prompt: 'Which loop runs its body exactly three times?',
+    title: 'Beacon: Count the flashes',
+    story: 'The Beacon is almost ready! Bean wants it to flash three times to signal that the valley is safe. Before switching it on, Bean checks the loop that controls the flashes.',
+    prompt: 'Which loop makes the Beacon flash exactly three times?',
     options: [
       'for (int i = 0; i < 3; i++)',
       'for (int i = 0; i <= 3; i++)',
       'for (int i = 1; i < 3; i++)',
     ],
     correctOption: 0,
-    hint: 'Start at 0, continue while i is less than 3, and increase i by 1.',
-    failMessage: 'Step through it: which loop uses i = 0, 1 and 2, and then stops?',
-    successMessage: 'Check 1 passed. The windmill is safe.',
+    hint: 'The counter starts at 0. Which condition lets it run for 0, 1, and 2, but stops before 3?',
+    failMessage: 'Count the values: the first loop runs for i = 0, 1, and 2. That is three flashes. The second runs four times, and the third runs twice.',
+    successMessage: 'Three flashes! Bean confirms the timing is correct. The Beacon is ready for its final safety check.',
   },
   {
     id: 'beacon-2',
     nodeId: 'beacon',
     type: 'quiz',
-    title: 'Beacon: Safety check 2',
-    story: 'One more check: the greenhouse trays.',
-    prompt: 'trays is {4, 8, 15}. What does trays[1] give you?',
+    title: 'Beacon: Read the signal',
+    story: 'The Beacon stores three signal codes in an array. Bean needs to read the second code to check that the correct signal will be sent across the valley.',
+    lesson: 'An array stores values in order. Java starts indexing at 0, so index 1 refers to the second value.',
+    prompt: 'The signal codes are {4, 8, 15}. What value does codes[1] return?',
     options: ['4', '8', '15'],
     correctOption: 1,
-    hint: 'Index 0 is the first item. What is at index 1?',
-    failMessage: 'Remember: counting starts at 0, so index 1 is the second item.',
+    hint: 'Index 0 is the first code. Move one position forward to find index 1.',
+    failMessage: 'Java starts counting array positions at 0: codes[0] is 4, codes[1] is 8, and codes[2] is 15.',
     successMessage:
-      'All checks passed! The Beacon blazes to life and answering lights appear across the valley.',
+      'Signal confirmed! Both safety checks have passed. The Beacon blazes to life, and answering lights appear across the valley.',
   },
 ]
