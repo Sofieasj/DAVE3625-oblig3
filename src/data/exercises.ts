@@ -234,10 +234,10 @@ class Raccoon ___ Pet {
     type: 'fix-code',
     title: 'Pet Barn: Give it a voice',
     story:
-      'The raccoon has moved into the barn! But when Bean asks what sound it makes, it only says "...". All pets have a sound() method, but each animal can make its own sound. Bean wants the raccoon to have a voice of its own.',
+      'The raccoon has moved into the barn! But when Bean asks what sound it makes, it only says "...". All pets have a sound() method, but each animal can make its own sound.',
     lesson:
       'A subclass can replace an inherited method with its own version. In Java, @Override marks a method that is intended to replace a method from the parent class. The return statement sends back the sound as a String.',
-    prompt: 'Change line 4 to give the raccoon its own sound. Choose any sound you like!',
+    prompt: 'Change line 4 to give the raccoon its own sound.',
     starterCode: `class Raccoon extends Pet {
 @Override
 String sound() {
@@ -248,7 +248,7 @@ return "...";
     acceptedAnswers: [],
     acceptedPatterns: [String.raw`^return\s*"((?!\.\.\.")[^"]{1,20})"\s*;$`],
     savesAs: 'petSound',
-    hint: 'Keep return, the quotation marks, and the semicolon. Change only the text between the quotation marks.',
+    hint: 'Chitter! Keep return, the quotation marks, and the semicolon. Change only the text between the quotation marks.',
     failMessage:
       'Write return followed by a sound in quotation marks, then a semicolon. For example, return "chitter";',
     successMessage: 'Chitter! The raccoon has found its voice. Bean discovers that inherited behavior can be customized!',

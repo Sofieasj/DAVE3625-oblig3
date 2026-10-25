@@ -73,11 +73,12 @@
 }
 
 .map-panel {
-  min-height: 660px;
+  height: 660px;
   padding: 16px;
 }
 
 .game-complete .map-panel {
+  height: auto;
   min-height: calc(100vh - 106px);
 }
 
@@ -694,7 +695,8 @@
 /* Terminal task panel */
 .terminal-panel {
   padding: 18px 20px 20px;
-  min-height: 660px;
+  height: 660px;
+  overflow-y: auto;
 }
 
 .terminal-panel.task-complete {
@@ -951,8 +953,8 @@
 }
 
 textarea#answer-input {
-  min-height: 88px;
-  resize: vertical;
+  min-height: 0;
+  resize: none;
   white-space: pre-wrap;
 }
 
@@ -1002,7 +1004,7 @@ textarea#answer-input {
   background: var(--color-console-bg);
   border: 1px solid var(--color-panel-border);
   padding: 12px;
-  min-height: 150px;
+  min-height: 98px;
 }
 
 .console-line {

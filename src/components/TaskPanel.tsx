@@ -143,7 +143,7 @@ export function TaskPanel({
           </label>
           <textarea
             id="answer-input"
-            rows={3}
+            rows={1}
             value={answer}
             onChange={(event) => onAnswerChange(event.target.value)}
             aria-label="Java code answer"
